@@ -1,7 +1,8 @@
-# JavaBaas
-**JavaBaas** 是基于Java语言开发的移动客户端后台开发框架，其核心设计目标是实现移动客户端的后台结构化数据存储、物理文件存储、消息推送等功能。极大的降低移动客户端的后台开发难度，实现快速开发。
 
-项目地址：[git@osc](http://git.oschina.net/staryet/JavaBaas)
+# JavaBaas
+**JavaBaas** 是基于Java语言开发的后台服务框架，其核心设计目标是实现移动客户端的后台结构化数据存储、物理文件存储、消息推送等功能。极大的降低移动客户端的后台开发难度，实现快速开发。
+
+项目地址：[GitHub](https://github.com/JavaBaas/JavaBaasServer)
 
 技术讨论群：479167886
 
@@ -14,7 +15,7 @@
 
 ##快速上手
 ###配置文件
-`JavaBaas.jar`为程序唯一执行文件。同目录中的`application.properties`为配置文件。
+`JavaBaas.jar`为程序唯一执行文件。同目录下的`application.properties`为配置文件。
 
 ###相关环境
 ####JDK
@@ -81,3 +82,6 @@ qiniu.sk = 七牛云存储的帐号sk
 qiniu.bucket = bucket名称
 qiniu.file.host = bucket的存储域名
 ```
+
+###创建应用
+系统成功启动后，默认将在http8080端口监听所有用户请求。此时首先要使用命令行工具`JavaBaasShell`创建应用。

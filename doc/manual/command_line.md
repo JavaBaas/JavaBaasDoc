@@ -13,18 +13,15 @@ java -jar BaasShell.jar
 启动成功后显示以下信息
 
 ```
-         _-----_
-        |       |    .--------------------------.
-        |--(o)--|    | Let's play with JavaBaas |
-       `---------´   |       application!       |
-        ( _´U`_ )    '--------------------------'
-        /___A___\
-         |  ~  |
-       __'.___.'__
-     ´   `  |° ´ Y `
+   ___                     ______
+  |_  |                    | ___ \
+    | |  __ _ __   __ __ _ | |_/ /  __ _   __ _  ___
+    | | / _` |\ \ / // _` || ___ \ / _` | / _` |/ __|
+/\__/ /| (_| | \ V /| (_| || |_/ /| (_| || (_| |\__ \
+\____/  \__,_|  \_/  \__,_|\____/  \__,_| \__,_||___/
 Version:1.0.0
-Host:http://127.0.0.1:8080/
-AdminKey:123456
+Host:http://localhost:8080/api/
+AdminKey:V1hwT1UyRkhUblZpUjNoclVWTlZlbEpEVlhwU1FTVXpSQ1V6UkElM0QlM0Qc3Rhc
 BAAS>
 ```
 
