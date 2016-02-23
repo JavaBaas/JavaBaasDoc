@@ -3,8 +3,9 @@
 **JavaBaas** 是基于Java语言开发的后台服务框架，其核心设计目标是实现移动客户端的后台结构化数据存储、物理文件存储、消息推送等功能。极大的降低移动客户端的后台开发难度，实现快速开发。
 
 项目地址：[GitHub](https://github.com/JavaBaas/JavaBaasServer)
-
 技术讨论群：479167886
+
+Note: [稳定版下载地址](http://7xr649.dl1.z0.glb.clouddn.com/JavaBaas.zip)
 
 ## 主要功能
 * 结构化数据存储
@@ -22,12 +23,12 @@
 JavaBaas基于JDK1.8编写，编译及运行需要安装JDK1.8环境。
 
 ####MongoDB
-JavaBaas使用mongoDB作为存储数据库，请先正确安装mongoDB数据库。
+JavaBaas使用MongoDB作为存储数据库，请先正确安装MongoDB数据库。
 
-在`application.properties`中配置mongoDB数据库连接信息。
+在`application.properties`中配置MongoDB数据库连接信息。
 
 ```
-spring.data.mongodb.host = 58.132.171.126 //mongoDB数据库地址 默认为127.0.0.1
+spring.data.mongodb.host = 127.0.0.1 //MongoDB数据库地址 默认为127.0.0.1
 spring.data.mongodb.database = baas //用于存储数据的数据库名称 默认为baas
 spring.data.mongodb.username = baas //用户名 不填写为无身份校验
 spring.data.mongodb.password = baas //密码 不填写为无身份校验
@@ -40,7 +41,7 @@ JavaBaas使用Redis作为缓存引擎，请先正确安装Redis数据库。
 在`application.properties`中配置Redis数据库连接信息。
 
 ```
-spring.redis.host = 58.132.171.126 //数据库地址
+spring.redis.host = 127.0.0.1 //Redis数据库地址
 ```
 
 ###启动
@@ -51,8 +52,8 @@ spring.redis.host = 58.132.171.126 //数据库地址
 
 ```
 [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080 (http)
-[main] c.s.b.c.l.ApplicationEventListener       : JavaBaas 系统启动成功
-[main] com.staryet.baas.Main                    : Started Main in 4.653 seconds (JVM running for 5.232)
+[main] c.s.b.c.l.ApplicationEventListener       : JavaBaasServer started.
+[main] com.staryet.baas.Main                    : Started Main in 2.653 seconds (JVM running for 3.232)
 ```
 
 ###JavaBaas自定义配置
@@ -84,4 +85,6 @@ qiniu.file.host = bucket的存储域名
 ```
 
 ###创建应用
-系统成功启动后，默认将在http8080端口监听所有用户请求。此时首先要使用命令行工具`JavaBaasShell`创建应用。
+`JavaBaas`系统成功启动后，默认将在http8080端口监听所有用户请求。此时首先要使用命令行工具`JBShell`创建应用。请参见[命令行工具](/manual/command_line.md)。
+
+##常见问题解决
