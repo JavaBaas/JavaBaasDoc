@@ -5,7 +5,7 @@
 项目地址：[GitHub](https://github.com/JavaBaas/JavaBaasServer)
 技术讨论群：479167886
 
-Note: [稳定版下载地址](http://7xr649.dl1.z0.glb.clouddn.com/JavaBaas.zip)
+Note: [JavaBaas稳定版下载地址](http://7xr649.dl1.z0.glb.clouddn.com/JavaBaas.zip)
 
 ## 主要功能
 * 结构化数据存储
