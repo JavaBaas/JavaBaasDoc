@@ -210,7 +210,7 @@ acl的详见 [ACL](#ACL)
 
 >"http://127.0.0.1:8080/"为请求的BaseUrl地址，"api/"代表是访问 REST API 的请求。
 
-###<span id="CreateObject">创建对象</span>
+###<span id="CreateObject">创建对象</span><a name="CreateObject" />
 为了在 JavaBaas 上创建一个新的对象，应该向 class 的 URL 发送一个 POST 请求，其中应该包含对象本身。例如，要创建如上所说的对象:
 
 ```
@@ -498,8 +498,8 @@ curl -X DELETE \
 	http://127.0.0.1:8080/api/object/Sound/deleteByQuery
 ```
 
-##<span id="Search">查询</span>
-###基础查询
+##查询
+###<span id="Search">基础查询</span>
 通过发送一个 GET 请求到类的 URL 上，不需要任何 URL 参数，如上文 [查询对象](#QueryObjects) 中给出的例子。
 
 > 需要注意的是，JavaBaas中，考虑到HTTP请求对 body 内容大小的限制，如果不加条件限制，默认一次请求最多返回 100 条数据的结构化数据。当然你也可以通过指定 `limit` 一次获取更多的数据，`limit` 默认值为100，任何 1 到 1000 之间的值都是可选的，`limit` 如果值小于等于 0 会强制转成100，大于 1000 的值都强制转成 1000。
