@@ -70,91 +70,85 @@ masterKey:  53a0b6967e2f4ac399341c4ac93f2db3
 ###对象（管理权限 普通权限）
 URL|METHOD|描述
 ------------ | ------------ | ------------
-/object/{className}|POST|[创建对象](#CreateObject)
-/object/{className}/{id}|GET|[获取对象](#GetObject)
-/object/{className}/{id}|PUT|[更新对象](#UpdateObject)
-/object/{className}/{id}/inc|PUT|[对象原子操作](#TomicOperations)
-/object/{className}|GET|[查询对象](#QueryObjects)
-/object/{className}/count|GET|[查询对象个数](#QueryObjectsCount)
-/object/{className}/{id}|DELETE|[删除对象](#DeleteObject)
-/object/{className}/deleteByQuery|DELETE|[批量删除对象](#DeleteObjectsByQuery)
+/object/{className}|POST|[创建对象](rest_api.md#创建对象)
+/object/{className}/{id}|GET|[获取对象](rest_api.md#获取对象)
+/object/{className}/{id}|PUT|[更新对象](rest_api.md#更新对象)
+/object/{className}/{id}/inc|PUT|[对象原子操作](rest_api.md#对象原子操作)
+/object/{className}|GET|[查询对象](rest_api.md#查询对象)
+/object/{className}/count|GET|[查询对象个数](rest_api.md#查询对象个数)
+/object/{className}/{id}|DELETE|[删除对象](rest_api.md#删除对象)
+/object/{className}/deleteByQuery|DELETE|[批量删除对象](rest_api.md#批量删除对象)
 
 ###应用（超级权限）
 URL|METHOD|描述
 ------------ | ------------ | ------------
-/admin/app|POST|[创建应用](#CreateApp)
-/admin/app |GET|[应用列表](#GetAppList)
-/admin/app/{appId}|GET|[获取应用](#GetApp)
-/admin/app/{appId}|DELETE|[删除应用](#DeleteApp)
-/admin/app/{appId}/resetKey|PUT|[重置应用key](#ResetAppKey)
-/admin/app/{appId}/resetMasterKey|PUT|[重置应用masterKey](#ResetAppMasterKey)
-/admin/app/{appId}/export|GET|[导出应用数据](#ExportAppData)
-/admin/app/{appId}/import|POST|[导入应用数据](#ImportAppData)
+/admin/app|POST|[创建应用](rest_api.md#创建应用)
+/admin/app |GET|[应用列表](rest_api.md#应用列表)
+/admin/app/{appId}|GET|[获取应用](rest_api.md#获取应用)
+/admin/app/{appId}|DELETE|[删除应用](rest_api.md#删除应用)
+/admin/app/{appId}/resetKey|PUT|[重置应用key](rest_api.md#重置应用key)
+/admin/app/{appId}/resetMasterKey|PUT|[重置应用masterKey](rest_api.md#重置应用masterKey)
+/admin/app/{appId}/export|GET|[导出应用数据](rest_api.md#导出应用数据)
+/admin/app/{appId}/import|POST|[导入应用数据](rest_api.md#导入应用数据)
 
 ###类（管理权限）
 URL|METHOD|描述
 ------------ | ------------ | ------------
-/master/clazz|POST|[创建类](#CreateClass)
-/master/clazz|GET|[类列表](#GetClassList)
-/master/clazz/{className}|GET|[获取类](#GetClass)
-/master/clazz/{className}|DELETE|[删除类](#DeleteClass)
-/master/clazz/{className}/export|GET|[导出类数据](#ExportClassData)
-/master/clazz/{className}/import|POST|[导入类数据](#ImportClassData)
-/master/clazz/{className}/acl|POST|[设置类的acl](#SetClassACL)
+/master/clazz|POST|[创建类](rest_api.md#创建类)
+/master/clazz|GET|[类列表](rest_api.md#类列表)
+/master/clazz/{className}|GET|[获取类](rest_api.md#获取类)
+/master/clazz/{className}|DELETE|[删除类](rest_api.md#删除类)
+/master/clazz/{className}/export|GET|[导出类数据](rest_api.md#导出类数据)
+/master/clazz/{className}/import|POST|[导入类数据](rest_api.md#导入类数据)
+/master/clazz/{className}/acl|POST|[设置类的acl](rest_api.md#设置类的acl)
 
 ###字段（管理权限）
 URL|METHOD|描述
 ------------ | ------------ | ------------
-/master/clazz/{className}/field|POST|[创建字段](#CreateFiled)
-/master/clazz/{className}/field|GET|[字段列表](#GetFieldList)
-/master/clazz/{className}/field/{fieldName}|GET|[获取字段](#GetFiled)
-/master/clazz/{className}/field/{fieldName}|PUT|[更新字段](#UpdateField)
-/master/clazz/{className}/field/{fieldName}|DELETE|[删除字段](#DeleteFiled)
+/master/clazz/{className}/field|POST|[创建字段](rest_api.md#创建字段)
+/master/clazz/{className}/field|GET|[字段列表](rest_api.md#字段列表)
+/master/clazz/{className}/field/{fieldName}|GET|[获取字段](rest_api.md#获取字段)
+/master/clazz/{className}/field/{fieldName}|PUT|[更新字段](rest_api.md#更新字段)
+/master/clazz/{className}/field/{fieldName}|DELETE|[删除字段](rest_api.md#删除字段)
 
 ###用户（管理权限 普通权限）
 URL|METHOD|描述
 ------------ | ------------ | ------------
-/user|POST|[注册用户](#RegUser)
-/user/{id}/binding/{platform}|POST|[绑定社交平台](#BindPlatform)
-/user/{id}/release/{platform}|DELETE|[解绑社交平台](#ReleasePlatform)
-/user/{id}|PUT|[修改用户信息](#UpdateUser)
-/user/{id}/updatePassword|PUT|[修改用户密码](#UpdatePassword)
-/user/login|GET|[用户登录](#UserLogin)
-/user/loginWithSns/{platform}|POST|[第三方登录](#UserLoginWithSNS)
-/user/{id}/resetSessionToken|PUT|[重置用户SessionToken](#ResetSessionToken)
+/user|POST|[注册用户](rest_api.md#注册用户)
+/user/{id}/binding/{platform}|POST|[绑定社交平台](rest_api.md#绑定社交平台)
+/user/{id}/release/{platform}|DELETE|[解绑社交平台](rest_api.md#解绑社交平台)
+/user/{id}|PUT|[修改用户信息](rest_api.md#修改用户信息)
+/user/{id}/updatePassword|PUT|[修改用户密码](rest_api.md#修改用户密码)
+/user/login|GET|[用户登录](rest_api.md#用户登录)
+/user/loginWithSns/{platform}|POST|[第三方登录](rest_api.md#第三方登录)
+/user/{id}/resetSessionToken|PUT|[重置用户SessionToken](rest_api.md#重置用户SessionToken)
 
 ###文件（管理权限 普通权限）
 URL|METHOD|描述
 ------------ | ------------ | ------------
-/file|POST|[创建文件](#CreateFile)
-/file/getToken|GET|[请求文件上传所需要的鉴权信息](#GetFileAuthentication)
-/file/callback|POST|[文件上传后的回调](#FileCallback)
-/file/notify/qiniu|POST|[七牛的异步操作通知](#NotifyQiniu)
-/file/master/process|POST|[文件处理](#ProcessFile)
+/file|POST|[创建文件](rest_api.md#创建文件)
+/file/getToken|GET|[请求文件上传所需要的鉴权信息](rest_api.md#请求文件上传所需要的鉴权信息)
+/file/callback|POST|[文件上传后的回调](rest_api.md#文件上传后的回调)
+/file/notify/qiniu|POST|[七牛的异步操作通知](rest_api.md#七牛的异步操作通知)
+/file/master/process|POST|[文件处理](rest_api.md#文件处理)
 
 ###云代码和钩子（管理权限 普通权限）
 URL|METHOD|描述
 ------------ | ------------ | ------------
-/master/cloud|POST|[部署云代码(含钩子)相关配置](#DeployCloud)
-/master/cloud|DELETE|[删除云代码(含钩子)相关配置](#UnDeployCloud)
-/cloud|Get|[调用云方法](#RequestCloud)
+/master/cloud|POST|[部署云代码(含钩子)相关配置](rest_api.md#部署云代码(含钩子)相关配置)
+/master/cloud|DELETE|[删除云代码(含钩子)相关配置](rest_api.md#删除云代码(含钩子)相关配置)
+/cloud|Get|[调用云方法](rest_api.md#调用云方法)
 
 ###设备（管理权限 普通权限）
 URL|METHOD|描述
 ------------ | ------------ | ------------
-/matser/push|POST|[推送消息](#PushInfo)
-/matser/push/setPushAccount|PUT|[设置推送账号信息](#SetPushAccount)
+/matser/push|POST|[推送消息](rest_api.md#推送消息)
+/matser/push/setPushAccount|PUT|[设置推送账号信息](rest_api.md#设置推送账号信息)
 
 ###推送（管理权限）
 URL|METHOD|描述
 ------------ | ------------ | ------------
-/installation|POST|[注册设备](#RegDevice)
-
-###API统计和日志（管理权限 超级权限）
-URL|METHOD|描述
------------- | ------------ | ------------
-/master/apiStat|GET|[API统计](#GetApiStatistics)
-/admin/log|GET|[获取日志信息](#GetAppLog)
+/installation|POST|[注册设备](rest_api.md#注册设备)
 
 ##对象
 ###对象格式
@@ -202,15 +196,13 @@ http://127.0.0.1:8080/api/object/Sound
 http://127.0.0.1:8080/api/object/Sound/6e929370b8674fd885a191052a34c259
 ```
 
-acl的详见 [ACL](#ACL)
-
 > 注意：createdPlat和updatedPlat是指创建或者更新该对象的请求是哪个平台发的，目前只有 `android` 、 `ios` 、 `js` 、 `cloud` 、 `shell` 和 `admin` 六种.
 
 > `_User` 、 `Installation` 、 `_File` 等一些内建类，class级别的操作跟普通的class资源路径用法有些区别，下面会有具体说明。
 
 >"http://127.0.0.1:8080/"为请求的BaseUrl地址，"api/"代表是访问 REST API 的请求。
 
-###<span id="CreateObject">创建对象</span><a name="CreateObject" />
+###创建对象
 为了在 JavaBaas 上创建一个新的对象，应该向 class 的 URL 发送一个 POST 请求，其中应该包含对象本身。例如，要创建如上所说的对象:
 
 ```
@@ -240,12 +232,12 @@ curl -X POST \
 
 > 对于成功的请求，响应主体中一般含有 `code` , `data` 和 `message` 信息（后面的例子不再单独说明）
 
-  *  `POST`、`PUT`和`DELETE`请求，请求成功后响应主体格式同本例子中的响应主体格式，`GET`请求，如果请求成功，响应主体为请求的结构化数据，例如 [获取对象](#GetObject);
+  *  `POST`、`PUT`和`DELETE`请求，请求成功后响应主体格式同本例子中的响应主体格式，`GET`请求，如果请求成功，响应主体为请求的结构化数据，例如 [获取对象](rest_api.md#GetObject);
   * `code` 值为 0 表示业务处理成功，1 表示业务处理失败。（目前，JavaBaas成功的请求响应中， `code` 值多数为 0 ，仅在云方法请求的响应中会出现 `code` 为 0 的情况）；
   * `data` 内容为请求响应的数据信息；
   * `message` 为响应的一些附加说明。
  
-###<span id="GetObject">获取对象</span>
+###获取对象
 当你创建了一个对象时，你可以通过发送一个 GET 请求, 以获取它的内容。例如，为了得到我们上面创建的对象
 
 ```
@@ -279,7 +271,7 @@ curl -X GET \
 }
 ```
 
-###<span id="UpdateObject">更新对象</span>
+###更新对象
 为了更改一个对象已经有的数据，你可以发送一个 PUT 请求到对象相应的 URL 上，任何你未指定的 key 都不会更改，所以你可以只更新对象数据的一个子集。例如，我们来更改我们对象的一个 title 字段：
 
 ```
@@ -303,7 +295,7 @@ curl -X PUT \
 }
 ```
 
-此时，通过 [获取对象](#GetObject) 可以看到之前创建的一条Sound对象中 `title` 字段已经被修改:
+此时，通过 [获取对象](rest_api.md#获取对象) 可以看到之前创建的一条Sound对象中 `title` 字段已经被修改:
 
 ```
 {
@@ -324,7 +316,7 @@ curl -X PUT \
 }
 ```
 
-###<span id="TomicOperations">对象原子操作</span>
+###对象原子操作
 对于Nuber类型的字段，例如我们需要记录某个音频的打开次数(readCount)，然而对于一个热门音频，可能会有很多并发打开音频操作，如果每次我们都是通过请求获取改音频目前的readCount，然后加1后再通过请求写到后台，那么这极容易造成数据脏读，引发冲突和覆盖，最终导致结果不准。对于这种场景，JavaBaas提供了对象的原子操作:
 
 ```
@@ -338,7 +330,7 @@ curl -X PUT \
 	http://127.0.0.1:8080/api/object/Sound/b54aa8a1ab5945649c628b63b65c1db9/inc
 ```
 
-请求成功后，通过 [获取对象](#GetObject) 可以看到之前创建的一条Sound对象中 `readCount` 字段已经被加1：
+请求成功后，通过 [获取对象](rest_api.md#获取对象) 可以看到之前创建的一条Sound对象中 `readCount` 字段已经被加1：
 
 ```
 {
@@ -360,7 +352,7 @@ curl -X PUT \
 }
 ```
 
-###<span id="QueryObjects">查询对象</span>
+###查询对象
 我们通过发送一个 GET 请求到类的 URL 上，从而一次获取多个对象：
 
 ```
@@ -429,10 +421,10 @@ curl -X GET \
     }
 ]
 ```
-通常，我们需要根据一些条件查询对象，从而获取需要的数据结果集，这时候，我们需要添加一些查询条件，因为有关查询的内容涉及内容较多，因此我们单拿出一章来讲查询，详见 [查询](#Search)。
+通常，我们需要根据一些条件查询对象，从而获取需要的数据结果集，这时候，我们需要添加一些查询条件，因为有关查询的内容涉及内容较多，因此我们单拿出一章来讲查询，详见 [查询](rest_api.md#查询)。
 
-###<span id="QueryObjectsCount">查询对象个数</span>
-通常，我们需要需要查询某个条件下(关于查询条件的更多介绍详见 [查询](#Search) )的对象个数，例如，统计时长 `length` 大于等于 300 的音频个数：
+###查询对象个数
+通常，我们需要需要查询某个条件下(关于查询条件的更多介绍详见 [查询](rest_api.md#查询) )的对象个数，例如，统计时长 `length` 大于等于 300 的音频个数：
 
 ```
 curl -X GET \
@@ -458,7 +450,7 @@ curl -X GET \
 }
 ```
 
-###<span id="DeleteObject">删除对象</span>
+###删除对象
 如果我们需要删除一个对象，可以通过：
 
 ```
@@ -483,8 +475,8 @@ curl -X DELETE \
 
 > 注意，删除对象
 
-###<span id="DeleteObjectsByQuery">批量删除对象</span>
-同样，我们也能根据查询条件(关于查询条件的更多介绍详见 [查询](#Search) )，例如删除所有时长 `length` 小于 200 或者音频名称 `title` 为 `音频的名称`，执行批量删除操作：
+###批量删除对象
+同样，我们也能根据查询条件(关于查询条件的更多介绍详见 [查询](rest_api.md#查询) )，例如删除所有时长 `length` 小于 200 或者音频名称 `title` 为 `音频的名称`，执行批量删除操作：
 
 ```
 curl -X DELETE \
@@ -499,8 +491,8 @@ curl -X DELETE \
 ```
 
 ##查询
-###<span id="Search">基础查询</span>
-通过发送一个 GET 请求到类的 URL 上，不需要任何 URL 参数，如上文 [查询对象](#QueryObjects) 中给出的例子。
+###基础查询
+通过发送一个 GET 请求到类的 URL 上，不需要任何 URL 参数，如上文 [查询对象](rest_api.md#查询对象) 中给出的例子。
 
 > 需要注意的是，JavaBaas中，考虑到HTTP请求对 body 内容大小的限制，如果不加条件限制，默认一次请求最多返回 100 条数据的结构化数据。当然你也可以通过指定 `limit` 一次获取更多的数据，`limit` 默认值为100，任何 1 到 1000 之间的值都是可选的，`limit` 如果值小于等于 0 会强制转成100，大于 1000 的值都强制转成 1000。
 
@@ -965,7 +957,7 @@ curl -X GET \
 
 ##应用
 你可以查看、创建和编辑你的应用通过 REST API ，需要注意的是，有关应用的所有 REST API 都需要超级权限 `adminKey` 。
-###<span id="CreateApp">创建应用</span>
+###创建应用
 你可以通过发送一个请求去创建一个新的应用：
 
 ```
@@ -995,7 +987,7 @@ curl -X POST \
     "message":""
 }
 ```
-###<span id="GetAppList">获取应用列表</span>
+###获取应用列表
 你可以查看你的应用列表通过下面的请求：
 
 ```
@@ -1034,7 +1026,7 @@ curl -X GET \
     }
 ]
 ```
-###<span id="GetApp">获取应用</span>
+###获取应用
 如果你已经知道某个应用的id，你也可以通过下面的请求获取：
 
 ```
@@ -1045,7 +1037,7 @@ curl -X GET \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/admin/app/56f89eb7ffe4f21c3d3e8f5e
 ```
-###<span id="DeleteApp">删除应用</span>
+###删除应用
 你可以通过下面的请求删除某个应用：
 
 ```
@@ -1056,7 +1048,7 @@ curl -X DELETE \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/admin/app/56f89eb7ffe4f21c3d3e8f5e
 ```
-###<span id="ResetAppKey">重置应用key</span>
+###重置应用key
 有时候因为应用 `key` 泄露或者其他原因，我们可以修改应用的 `key` 通过下面的请求：
 
 ```
@@ -1068,7 +1060,7 @@ curl -X PUT \
 	http://127.0.0.1:8080/api/admin/app/56cd5194c6db7c372fd1563f/resetKey
 ```
 
-###<span id="ResetAppMasterKey">重置应用masterKey</span>
+###重置应用masterKey
 有时候因为应用 `masterKey` 泄露或者其他原因，我们可以修改应用的 `masterKey` 通过下面的请求：
 
 ```
@@ -1080,7 +1072,7 @@ curl -X PUT \
 	http://127.0.0.1:8080/api/admin/app/56cd5194c6db7c372fd1563f/resetMasterKey
 ```
 
-###<span id="ExportAppData">导出应用数据</span>
+###导出应用数据
 业务数据备份是每个应用都会考虑的问题，JavaBaas 提供了应用结构数据导出的接口，你可以发送请求：
 
 ```
@@ -1135,7 +1127,7 @@ curl -X GET \
 
 > 需要注意的是,导出应用数据导出的是一个 json 串，而且这里导出的不是 App 的所有结构化数据，只是 App 相关信息和类结构等相关数据。
 
-###<span id="ImportAppData">导入应用数据</span>
+###导入应用数据
 有了备份，就需要备份恢复，JavaBaas 提供了应用数据导入的接口，你可以发送请求：
 
 ```
@@ -1150,7 +1142,7 @@ curl -X POST \
 
 ##类
 你可以查看、创建和编辑你的类通过 REST API ，需要注意的是，有关类的所有 REST API 都需要管理权限 `masterKey` 。
-###<span id="CreateClass">创建类</span>
+###创建类
 你可以通过发送请求，来完成创建一个新的类的操作：
 
 ```
@@ -1163,7 +1155,7 @@ curl -X POST \
   -d '{"name":"NewClass"}' \
 	http://127.0.0.1:8080/api/master/clazz
 ```
-###<span id="GetClassList">获取类列表</span>
+###获取类列表
 你可以查看你的类列表通过下面的请求：
 
 ```
@@ -1237,7 +1229,7 @@ curl -X GET \
     }
 ]
 ```
-###<span id="GetClass">获取类</span>
+###获取类
 如果你已经知道类的名称 ，你可以通过下面的请求获得类的相关信息：
 
 ```
@@ -1249,7 +1241,7 @@ curl -X GET \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/master/clazz/Sound
 ```
-###<span id="DeleteClass">删除类</span>
+###删除类
 对于不再使用的类，我们可以通过下面的请求删除它：
 
 ```
@@ -1263,7 +1255,7 @@ curl -X DELETE \
 ```
 > 需要说明的是 JavaBaas 内建类是不允许删除的，比如 `_User`、`_File`、`_Installation`、`_PushLog` 等。
 
-###<span id="ExportClassData">导出类数据</span>
+###导出类数据
 
 ```
 curl -X GET \
@@ -1307,7 +1299,7 @@ curl -X GET \
     ]
 }
 ```
-###<span id="ImportClassData">导入类数据</span>
+###导入类数据
 通过下面的请求你可以执行导入类数据操作：
 
 ```
@@ -1320,7 +1312,7 @@ curl -X POST \
   -d '{这里是类结构化数据的 json 串}' \
 	http://127.0.0.1:8080/api/master/clazz/Sound/export
 ```
-###<span id="SetClassACL">设置类的acl</span>
+###设置类的acl
 你可以通过下面的请求设置类级别的acl：
 
 ```
@@ -1337,7 +1329,7 @@ curl -X POST \
 
 ##字段
 你可以查看、创建和编辑你的字段通过 REST API ，需要注意的是，有关字段的所有 REST API 都需要管理权限 `masterKey` 。（以下所有有关字段的例子都是在 `Sound` 类中操作）
-###<span id="CreateFiled">创建字段</span>
+###创建字段
 你可以通过下面的请求创建一个新的字段：
 
 ```
@@ -1350,7 +1342,7 @@ curl -X POST \
   -d '{"name":"newFiled","type":1}' \
 	http://127.0.0.1:8080/api/master/clazz/Sound/field
 ```
-###<span id="GetFieldList">字段列表</span>
+###字段列表
 你可以通过下面的请求获取字段列表：
 
 ```
@@ -1402,7 +1394,7 @@ curl -X GET \
     }
 ]
 ```
-###<span id="GetFiled">获取字段</span>
+###获取字段
 你可以通过下面的请求获取一个字段的信息：
 
 ```
@@ -1414,7 +1406,7 @@ curl -X GET \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/master/clazz/Sound/field/newFiled
 ```
-###<span id="UpdateField">更新字段</span>
+###更新字段
 你可以通过下面的请求更新一个字段的信息：
 
 ```
@@ -1429,7 +1421,7 @@ curl -X PUT \
 ```
 > 目前 JavaBaas 只支持修改字段的是否必填 `required ` 和客户端是否可见 `security ` 属性。
 
-###<span id="DeleteFiled">删除字段</span>
+###删除字段
 你可以通过下面的请求删除一个的字段：
 
 ```
@@ -1447,7 +1439,7 @@ curl -X DELETE \
 
 用户类`User`的基本功能与其他的类是相同的。用户对象和其他对象不同的是，每个用户必须有用户名`username`和密码`password`，密码会被自动地加密和存储。JavaBaas强制要求`username`和`email`这两个字段必须是没有重复的。
 
-###<span id="RegUser">注册用户</span>
+###注册用户
 注册一个新用户与创建一个新的普通对象之间的不同点在于`username`和`password`字段都是必需的。`password`字段会以和其他的字段不一样的方式处理，它在储存时会被加密而且永远不会被返回给任何来自客户端的请求。
 
 为了注册一个新的用户，需要向`user`路径发送一个POST请求，且可以在创建时同时提交一个自定义字段。例如，创建一个有昵称的新用户（其中昵称为自定义字段）:
@@ -1479,7 +1471,7 @@ curl -X POST \
 
 > SessionToken。在`JavaBaas`中，所有的请求通过添加请求头`JB-SessionToken`来表示当前请求的用户身份。因此，在注册或登录成功后，客户端需缓存用户的`SessionToken`作为之后请求的身份标识。同时，当用户密码信息变化时，之前获取的`SessionToken`将失效，需重新登录进行获取。
 
-###<span id="UserLogin">用户登录</span>
+###用户登录
 用户注册成功后，可以使用用户名密码进行登录，登录成功后，会获得所有的用户信息。
 
 ```
@@ -1517,7 +1509,7 @@ curl -X GET \
 }
 ```
 
-###<span id="BindPlatform">绑定社交平台</span>
+###绑定社交平台
 `JavaBaas`支持将系统用户与第三方平台用户进行绑定。如新浪微博、微信、qq等，这样就允许你的用户直接用第三方平台用户身份进行登录。关联完成后，authData将被存储到用户信息中，并通过登录即可重新获取。
 
 首先使用第三方平台进行用户授权（或使用ShareSdk等工具），完成授权后第三方平台讲返回accessToken以及用户id等信息。客户端向`JavaBaas`提交此信息后，后台会进行授权检查，检查通过后完成绑定。
@@ -1540,7 +1532,7 @@ curl -X POST \
 * accessToken:使用第三方平台授权时获取的token
 * uid:使用第三方平台授权时获取的用户身份表示，其中微博取uid字段，qq、微信取openId字段
 
-###<span id="ReleasePlatform">解绑社交平台</span>
+###解绑社交平台
 使用此接口将用户与第三方平台解除绑定。
 
 ```
@@ -1558,7 +1550,7 @@ curl -X DELETE \
 * id:用户id
 * platform:第三方平台的名称，微博:weibo、qq:qq、微信:weixin。
 
-###<span id="UpdateUser">修改用户信息</span>
+###修改用户信息
 你可以通过发送请求修改用户信息：
 ```
 curl -X PUT \
@@ -1571,7 +1563,7 @@ curl -X PUT \
 	http://127.0.0.1:8080/api/a6159350c5964cebbe523d679b9889ae/updatePassword
 ```
 
-###<span id="UpdatePassword">修改用户密码</span>
+###修改用户密码
 修改密码需要让用户输入一次旧密码做验证，旧密码正确才可以修改为新密码。同时，登录用户才可以修改自己的密码，因此调用修改密码接口需要在请求头中加入`JB-SessionToken`来表示当前请求的用户身份。
 
 ```
@@ -1590,7 +1582,7 @@ curl -X PUT \
 * old_password:用户的老密码
 * new_password:用户的新密码
 
-###<span id="UserLoginWithSNS">第三方登录</span>
+###第三方登录
 用户于第三方平台绑定后，可以使用第三方平台授权信息进行登录操作。登录成功后，会获得所有的用户信息。
 
 ```
@@ -1631,8 +1623,8 @@ curl -X POST \
 ##文件
 JavaBaas 目前的文件系统使用第三方的 [七牛云存储](http://www.qiniu.com) 。
 
-###<span id="CreateFile">创建文件</span>
-###<span id="GetFileAuthentication">请求文件上传所需要的鉴权信息</span>
+###创建文件
+###请求文件上传所需要的鉴权信息
 在往七牛上传物理文件前，需要先获取一个鉴权信息，通过下面的请求:
 
 ```
@@ -1658,11 +1650,11 @@ curl -X GET \
 }
 ```
 
-###<span id="FileCallback">文件上传后的回调</span>
+###文件上传后的回调
 这个接口是提供给七牛处理完文件上传后回调的。
-###<span id="NotifyQiniu">七牛的异步操作通知</span>
+###七牛的异步操作通知
 这个接口是提供给七牛异步操作异步处理文件后通知JavaBaas的。
-###<span id="ProcessFile">文件处理</span>
+###文件处理
 该接口实现为七牛处理文件时添加一些上传策略。例如，我们要对某个视频文件做 `M3U8` 分割：
 
 ```
@@ -1678,7 +1670,7 @@ curl -X POST \
 ##云代码和钩子
 JavaBaas 提供的接口能解决大部分简单的业务需求，但是对于一些复杂一些或者有关联性的需求，比如，当我们删除一个用户，希望把该用户的相关数据给清除，例如该用户发的作品，该用户发的评论等信息；再比如，当我们执行一个操作，对一个音频点赞或者取消点赞操作，这个操作需要判断当前用户是否已经对该音频点过赞，并且如果点赞或者取消点赞成后需要对音频的点赞数做响应的修改。这些需求如果都在客户端处理，会导致客户端相关逻辑异常复杂。对于这些需求的处理，JavaBaas提供了云方法和钩子的接口。
 
-###<span id="DeployCloud">部署云代码(含钩子)相关配置</span>
+###部署云代码(含钩子)相关配置
 你可以通过下面的请求部署云代码(含钩子)：
 
 ```
@@ -1692,7 +1684,7 @@ curl -X POST \
 	http://127.0.0.1:8080/api/master/cloud
 ```
 
-###<span id="UnDeployCloud">删除云代码(含钩子)相关配置</span>
+###删除云代码(含钩子)相关配置
 如果云方法或者钩子不再使用，可以通过下面的请求删除（需要注意的是，这里的删除会删除所有的云方法和钩子的配置）：
 
 ```
@@ -1705,7 +1697,7 @@ curl -X DELETE \
 	http://127.0.0.1:8080/api/master/cloud
 ```
 
-###<span id="RequestCloud">调用云方法</span>
+###调用云方法
 我们可以通过下面的请求调用我们配置好的云方法：
 
 ```
@@ -1719,7 +1711,7 @@ curl -X GET \
 ```
 ##设备
 JavaBaas提供了接口，供注册和记录设备，从而用于消息推送活着其他用途。
-###<span id="RegDevice">注册设备</span>
+###注册设备
 下面的请求可以注册设备信息：
 
 ```
@@ -1736,7 +1728,7 @@ curl -X POST \
 ##推送
 目前，JavaBaas没有推送系统，使用的是第三方消息推送系统。
 
-###<span id="PushInfo">推送消息</span>
+###推送消息
 通过下面请求，我们可以发送消息推送：
 
 ```
@@ -1752,7 +1744,7 @@ curl -X POST \
 
 >这里需要注意的是，如果 where 没有参数值，JavaBaas 会给所有设备进行推送。
 
-###<span id="SetPushAccount">设置推送账号信息</span>
+###设置推送账号信息
 可以通过下面的请求设置第三方推送的账号信息：
 
 ```
