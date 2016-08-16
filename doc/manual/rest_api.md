@@ -15,7 +15,7 @@ REST API 可以让你用任何支持发送 HTTP 请求的设备来与 JavaBaas �
 `admin`权限为系统的超级权限，系统的核心管理接口需要使用此权限进行调用，如创建删除应用等。在`src/main/resources/application.properties`需要配置auth.admin.key，系统才能正常工作。如：
 
 ```
-auth.admin.key = V1hwT1UyRkhUblZpUjNoclVWTlZlbEpEVlhwU1FTVXpSQ1V6UkElM0QlM0Qc3Rhc
+baas.auth.key = V1hwT1UyRkhUblZpUjNoclVWTlZlbEpEVlhwU1FTVXpSQ1V6UkElM0QlM0Qc3Rhc
 ```
 其中key由用户自由生成。
 
