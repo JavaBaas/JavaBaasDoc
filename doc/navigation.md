@@ -9,5 +9,7 @@
 
   * [命令行工具](manual/command_line.md)
   * [REST API](manual/rest_api.md)
+  * [Android SDK](manual/android-adk_api.md)
+  * [iOS SDK](manual/ios-adk_api.md)
 
 [下载](download.md)
