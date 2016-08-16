@@ -29,10 +29,13 @@ BAAS>
 `JBShell.jar `为程序执行文件。同目录下的`config.properties`为配置文件。内容如下：
 
 ```
-host=http://localhost:8080/api/    //JavaBaas服务器地址
-key=V1hwT1UyRkhUblZpUjNoclVWTlZlbEpEVlhwU1FTVXpSQ1V6UkElM0QlM0Qc3Rhc
-    //JavaBaas中配置的AdminKey
+host = http://localhost:8080/api/
+key = JavaBaas
 ```
+
+其中`host`为`JavaBaas`服务器所在的地址，本地调用`JBShell`默认使用localhost即可，远程管理需设置正确的地址。
+
+`key`为`JavaBaas`超级密钥，不设置默认为JavaBaas。
 
 ##命令
 ###内建命令
