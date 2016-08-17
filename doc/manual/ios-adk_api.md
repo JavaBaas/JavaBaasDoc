@@ -22,14 +22,14 @@ pod 'JavaBaasSDK'
 
 假如，我们需求一个音乐播放器类型的app，那么我们可以建立一个表名为`Single`（单曲）的`JBObejct`对象，并包含下列属性：
 
-```objc
+```objectivec
 singer : "张三"; 
 songName : "张三的歌";   
 length : 241;
 ```
 需要注意的是，以下所列出的为系统保留字段，由系统自动生成或更新，既不可作为属性名使用，也无需开发者进行指定。
 
-```objc
+```objectivec
 _id    createdAt    
 acl    updatedAt    
 ```
@@ -38,7 +38,7 @@ acl    updatedAt
 
 那么，现在我们可以创建一个名为"张三的单曲"的单曲对象(Single)：
 
-```objc
+```objectivec
 JBObject *single = [JBObject objectWithClassName:@"Single"];
 [single setObject:@"张三" forKey:@"singer"];   
 [single setObject:@"张三的单曲" forKey:@"songName"];  
@@ -48,7 +48,7 @@ JBObject *single = [JBObject objectWithClassName:@"Single"];
 JavaBaas的SDK同时提供了数据查询、保存、更新等的同步和异步方法。
 例如，我们要保存上面创建好的"张三的单曲"的单曲对象：
 
-```objc
+```objectivec
 //同步方法-保存数据
 NSError *error = nil;
 [single save:&error];
@@ -67,7 +67,7 @@ NSError *error = nil;
 ##3.3 检索对象
 如果已知objectId，用JBQuery就可以查询到与之相对应的唯一的JBObject。例如，
 
-```objc
+```objectivec
 JBQuery *query = [JBQuery queryWithClassName:@"Single"];
 
 //同步方法-检索单对象
@@ -87,7 +87,7 @@ JBObject *single = [getObjectOfClass:@"Single" objectId:@"ac31c72291854630824dbe
 如果我们需要发布或上传一首单曲（single），那么，需要调用`save`方法，数据才能被真正保存下来。
 例如，将创建好的"张三的单曲"保存到服务器：
 
-```objc
+```objectivec
 //同步方法-保存数据
 NSError *error = nil;
 [single save:&error];
@@ -103,14 +103,14 @@ NSError *error = nil;
 ```
 运行上述示例代码后，想要确认保存是否已经生效，可以到云端的数据管理页面查看数据存储情况。如果已经保存成功，那么在Single的数据表中应该显示出以下纪录：
 
-```objc
+```objectivec
 objectId:"ac31c72291854630824dbe94bf269748", singer: "张三", songName:"张三的单曲", length:251,   
 createdAt:"2016-01-03 11:13:39", updatedAt:"2016-01-03 11:13:39"
 ```
 ##3.5 更新对象
 更新对象相对简单，只需要更新属性，再保存即可。例如：
 
-```objc
+```objectivec
 //假设我们现在要对上面"张三的单曲"这一单曲对象更新一些属性
 [single setObject:@(3000) forKey:@"downloadCount"];
 [single saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -126,14 +126,14 @@ createdAt:"2016-01-03 11:13:39", updatedAt:"2016-01-03 11:13:39"
 ##3.6 删除对象
 删除一个`JBObject`对象：
 
-```objc
+```objectivec
 //同步方法-删除文件
 NSError *error = nil;
 [single delete:&error];
 ```
 如果需要在删除后进行操作可以使用`deleteInBackgroundWithBlock:`
 
-```objc
+```objectivec
 //异步方法-删除文件
 [single deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
   if (error) {
@@ -148,7 +148,7 @@ NSError *error = nil;
 
 例如，一首单曲是隶属一张专辑的，创建一张专辑信息并对应一首单曲，那么，这首单曲就是实例a，而它所属的专辑就是实例b。专辑可以作为单曲的属性保存。因此可以这样写：
 
-```objc
+```objectivec
 //创建专辑、名称
 JBObject *myAlbum = [JBObject objectWithoutDataWithClassName:@"Album" objectId: 1a5b907a272c47fd977708ebf6bfe958];
 [myAlbum setObject:@"王五的专辑" forKey:@"title"];
@@ -176,7 +176,7 @@ NSError *error = nil;
 ```
 默认情况下，在获取到一个JBObject对象实例时，与之相关联的JBObject对象的属性值是获取不到的。这些对象除了objectId之外，其他属性值都是空的。例如我们获取到一个单曲对象，而它关联的专辑对象的属性值，除了objectId，其他的名称、发布时间等都是空的，我们要得到全部这些属性数据，用include来获得关联对象的所有属性：
 
-```objc
+```objectivec
 JBQuery *query = [JBQuery queryWithClassName:"Single"];
 [query includeKey:@"album"];
 
@@ -196,7 +196,7 @@ NSArray *objects = (NSArray *)[query findObjects:&error];
 ##3.8 原子操作
 许多应用都需要实现计数器功能。比如一首单曲，我们需要记录有多少用户下载了它，但可能在同一时间内有多个用户对同一首单曲进行下载操作，如果在每个客户端直接把它们读到的计数值增加之后再写回去，那么极容易引发冲突和付费，导致结果不准，因此，我们使用`incrementKeyInBackground:block:`以原子操作方式来实现计数，这个方法默认计数加1：
 
-```objc
+```objectivec
 //同步方法-默认计数加1
 NSError *error = nil;
 [single incrementKey:@"downloadCount" error:&error];
@@ -211,7 +211,7 @@ NSError *error = nil;
 }];
 ```
 也可以使用`incrementKeyInBackground:byAmount:block:`来给字段累加一个特定数值，传入的数值只能是整形的：
-```objc
+```objectivec
 //同步方法-计数加任意值
 NSError *error = nil;
 [single incrementKeyInBackground:@"playCount" byAmount:@(10) error:&error];
@@ -238,7 +238,7 @@ SDK中的`JBQuery`类提供了多种检索方法，以满足诸如单对象查�
 
 例如，需要查找指定歌手（singer）的所有单曲，可以使用`whereKey:equalTo:`来设定查询条件。
 
-```objc
+```objectivec
 //假定已知歌手名为"张三"的Singer对象"zhangsan"
 JBQuery *query = [JBQuery queryWithClassName:@"Single"];
 [query whereKey:@"singer" equalTo:zhangsan];
@@ -260,31 +260,31 @@ NSArray *objects = (NSArray *)[query findObjects:&error];
 给`JBQuery`的查询添加约束条件有多种方法。
 `whereKey:equalTo:`、`whereKey:notEqualTo:`用来搭配对应的键和值过滤对象。
 
-```objc
+```objectivec
 //查询歌手不是张三的单曲
 [query whereKey:@"singer" notEqualTo:@"张三"];
 ```
 一次查询可以设置多个约束条件，只有满足所有约束条件的对象才会被返回，这相当于使用and类型的查询条件。
 
-```objc
+```objectivec
 //查询歌手不是张三并且单曲时长超过180s的单曲
 [query whereKey:@"singer" notEqualTo:@"张三"];
 [query whereKey:@"length" greaterThan:@(180)];
 ```
 `limit`：限制返回结果的数量。返回数量默认是100，limit取值范围是1到1000。
 
-```objc
+```objectivec
 query.limit = 20; //最多返回20条结果
 ```
 `skip`：跳过初始结果，对于分页很实用。
 
-```objc
+```objectivec
 query.skip = 20; //跳过前20条查询结果
 ```
 
 `addAscendingOrder`、`addDescendingOrder`：用来增加排序键。
 
-```objc
+```objectivec
 //按照播放次数升序排列
 [query addAscendingOrder:@"playTimes"];
 //按照播放次数降序排列
@@ -292,7 +292,7 @@ query.skip = 20; //跳过前20条查询结果
 ```
 查询中“比较”,`whereKey:lessThan:`(小于)、`whereKey:lessThanOrEqualTO:`(小于等于)、`whereKey:greaterThan:`(大于)、`whereKey:greaterThanOrEqualTo:`(大于等于)：
 
-```objc
+```objectivec
 //下载次数 < 100
 [query whereKey:@"downloadCount" lessThan:@(100)];
 //下载次数 <= 100
@@ -304,7 +304,7 @@ query.skip = 20; //跳过前20条查询结果
 ```
 查询中的“存在”，`whereKeyExist:`(存在)、`whereDoesNotExist:`(不存在)：
 
-```objc
+```objectivec
 //检索所有存在MV的单曲对象
 JBQuery *query = [JBQuery queryWithClassName:@"Single"];
 [query whereKeyExist:@"mv"];
@@ -343,13 +343,13 @@ NSArray *objects = (NSArray *)[query findObjects:&error];
 ##4.3 数组值查询
 当属性值为数组时，可以使用`whereKey:containedIn:`
 
-```objc
+```objectivec
 //假定已知歌手名为"张三"的zhangsan(Singer)对象和歌手名为"李四"的lisi(Singer)对象，检索出歌手为张三或李四的单曲对象
 [query whereKey:@"singer" containedIn:@[zhangsan, lisi]];
 ```
 ##4.4 模糊查询
 
-```objc
+```objectivec
 //查询所有名字name中包含“张”的歌手
 JBQuery *query = [JBQuery queryWithClassName:@"Singer"];
 [query whereKey:@"name" containsString:@"张"];
@@ -359,7 +359,7 @@ JBQuery *query = [JBQuery queryWithClassName:@"Singer"];
 
 例如，每个单曲`Single`的`singer`字段都有一个`Singer`歌手对象，那么找出指定歌手的单曲：
 
-```objc
+```objectivec
 // 假定已经获取到歌手名为“张三”的singer这个JBObject对象
 JBQuery *query = [JBQuery queryWithClassName:"Single"];
 [query whereKey:@"singer" equalTo:singer];
@@ -375,7 +375,7 @@ NSArray *objects = (NSArray *)[query findObjects:&error];
 ```
 如果要做嵌套查询，应使用`whereKey:matchesQuery:`，举例来说，检索专辑销量超过50000的所有单曲对象：
 
-```objc
+```objectivec
 JBQuery *innerQuery = [JBQuery queryWithClassName:@"Album"];
 [innerQuery whereKey:@"saleCount" greaterThan:@(50000)];
 ;
@@ -393,7 +393,7 @@ NSArray *objects = (NSArray *)[query findObjects:&error];
 ```
 如果要用一个对象中某一键值，去匹配另一个查询结果对象中一个键值，来得到最终结果，可以使用`whereKey:matchesKey:matchesClass:inQuery:`,例如，检索当前用户所关注歌手的所有单曲对象：
 
-```objc
+```objectivec
 //获取当前用户关注的歌手列表
 JBQuery *followQuery = [JBQuery queryWithClassName:@"FollowSinger"];
 [followQuery whereKey:@"user" equalTo:[JBUser currentUser]];
@@ -417,7 +417,7 @@ NSArray *objects = (NSArray *)[query findObjects:&error];
 而如果是复合查询的话，可以使用`orQueryWithSubqueries:`.
 例如，检索出下载次数很多或者下载次数很少的单曲：
 
-```objc
+```objectivec
 JBQuery *lotsOfDownload = [JBQuery queryWithClassName:@"Single"];
 [lotsOfDownload whereKey:@"downloadCount" greaterThan:@(1000)];
 JBQuery *fewDownload = [JBQuery queryWithClassName:@"Single"];
@@ -445,7 +445,7 @@ NSArray *objects = (NSArray *)[query findObjects:&error];
 
 例如，网络无法连接时，
 
-```objc
+```objectivec
 JBQuery *query = [JBQuery queryWithClassName:@"Single"];
 query.cachePolicy = JBCachePolicyCacheOnly;
 
@@ -480,7 +480,7 @@ NSArray *objects = (NSArray *)[query findObjects:&error];
 
 例如，如果我们想知道某张专辑有多少首单曲的时候：
 
-```objc
+```objectivec
 JBQuery *query = [JBQuery queryWithClassName:@"Album"];
 [query whereKey:@"album" equalTo:@"李四的专辑"];
 
@@ -504,14 +504,14 @@ ACL(Access Control List)是数据安全管理办法，设置了访问修改权�
 
 默认情况下，每一个对象都是可读可写的。但当设置了ACL之后，默认的ACL就会被覆盖。
 
-```objc
+```objectivec
  JBACL *acl = [JBACL ACL];
  [acl setPublicReadAccess:YES];  //设置全部用户均可读
  [acl setPublicWriteAccess:YES];  //设置全部用户均可写
 ```
 大部分时候，不同用户针对同一对象访问权限是不同的，那么就需要指定用户访问权限：
 
-```objc
+```objectivec
 JBACL *acl = [JBACL ACL];
 [acl setPublicReadAccess:YES];
 [acl setWriteAccess:YES forUser:[JBUser currentUser]];
@@ -521,7 +521,7 @@ JBACL *acl = [JBACL ACL];
 `JBFile`是继承自`JBObject`的子类。是用来处理文件管理所需功能的专门类。
 `JBFile` 允许应用将文件存储到服务端，支持图片、视频等常见的文件类型，以及其他任何二进制数据。
 
-```objc
+```objectivec
 NSData *data = [NSdata dataWithContentsOfURL:http://7xnus0.com2.z0.glb.qiniucdn.com/5645b2a574242e39eee89829/c25b2241637b49c8bc021a60abb5f23e];
 JBFile *file = [JBFile fileWithName:@"video.mp4" data:data];
 ```
@@ -529,7 +529,7 @@ JBFile *file = [JBFile fileWithName:@"video.mp4" data:data];
 * 给文件添加拓展名十分必要，服务器通过拓展名判断文件类型，例如PNG图片的拓展名应该是.png，MP4视频文件的拓展名应该是.mp4，不应弄混弄错。
 
 如果需要存储的文件是来自网上，可以使用JBFile提供的方法`fileWithURL:`，所以上面的代码也可以这么写：
-```objc
+```objectivec
 JBFile *file = [JBFile fileWithURL:http://7xnus0.com2.z0.glb.qiniucdn.com/5645b2a574242e39eee89829/c25b2241637b49c8bc021a60abb5f23e];
 ```
 ##6.2 文件元数据
@@ -539,7 +539,7 @@ JBFile *file = [JBFile fileWithURL:http://7xnus0.com2.z0.glb.qiniucdn.com/5645b2
 ##6.5 进度提示
 使用`saveInBackgroundWithBlock:progressBlock:`可以获取到`JBFile`的上传进度。例如：
 
-```objc
+```objectivec
 [file saveInBackgroundWithBlock:^(id object, NSError *error) {
     //上传成功或失败的逻辑处理
 } progressBlock:^(float percentDone) {
@@ -561,7 +561,7 @@ JBFile *file = [JBFile fileWithURL:http://7xnus0.com2.z0.glb.qiniucdn.com/5645b2
 ##7.3 注册
 大部分程序都会需要用户注册，例如：
 
-```objc
+```objectivec
 JBUser *myUser = [JBUser user];
 [user setObject:@"张三" forKey:@"username"];
 [user setObject:@"123456" forKey:@"password"];
@@ -582,7 +582,7 @@ NSError *error = nil;
 ##7.4 登录（修改）
 让已经成功注册的用户登录到自己的账户，可以调用`JBUser`类中登录相关的同异步方法，并根据用户选择登录方式的不同调用不同的方法。例如：
 
-```objc
+```objectivec
 //同步方法-用户名、密码登录
 NSError *error = nil;
 [JBUser logInWithUsername:@"张三" password:@"123456" error:&error];
@@ -620,7 +620,7 @@ NSError *error = nil;
 ##7.5 当前用户
 用户，是应用程序的核心。如果每次打开应用程序都要登录，会直接影响用户体验。为避免这种情况，可以使用缓存的`currentUser`对象。当用户成功注册或者第一次成功登录后，就将当前用户对象缓存在本地中，既方便下次调用，也给用户以最好的应用体验。
 
-```objc
+```objectivec
 JBUser *current = [JBUser currentUser];
 if (currentUser != nil) {
     //本地缓存用户对象不为空，当前用户已登录
@@ -630,14 +630,14 @@ if (currentUser != nil) {
 ```
 清除缓存的用户对象：
 
-```objc
+```objectivec
 [JBUser logout];  //清除本地缓存用户对象
 JBUser *currentUser = [JBUser currentUser];  //现在currentUser是nil了
 ```
 ##7.6 修改/重置密码
 当用户使用非第三方授权登录而是用户名密码或手机密码登录时，就会有更改密码的需求，我们也提供了相应的方法来满足用户的这一需求：
 
-```objc
+```objectivec
 [JBUser logInWithUsernameInBackground:@"张三" password:@"123456" block:^(id object, NSError *error) {
     if (error) {
         //登录失败
@@ -679,7 +679,7 @@ NSError *error = nil;
 #九、调用云代码
 可以使用JBCloud类的静态方法调用云代码中定义的函数：
 
-```objc
+```objectivec
 [JBCloud callFunctionInBackgroud:@"functionName" withParameters:@{...} block:^(id object, NSError *error {
   //返回结果，业务逻辑
 })];
