@@ -3,7 +3,9 @@
 **JavaBaas** 是基于Java语言开发的后台服务框架，其核心设计目标是实现移动客户端的后台结构化数据存储、物理文件存储、消息推送等功能。极大的降低移动客户端的后台开发难度，实现快速开发。
 
 项目地址：[GitHub](https://github.com/JavaBaas/JavaBaasServer)
+
 技术讨论群：479167886
+
 完整文档参见：[www.javabaas.com](http://www.javabaas.com/)
 
 备注: [JavaBaas稳定版下载地址](http://7xr649.dl1.z0.glb.clouddn.com/JavaBaas.zip)
@@ -15,38 +17,26 @@
 * 用户系统
 * 消息推送
 
-## 环境配置
-###配置文件
-`JavaBaas.jar`为程序唯一执行文件。同目录下的`application.properties`为配置文件。
+##快速上手
 
 ###相关环境
 ####JDK
 JavaBaas基于JDK1.8编写，编译及运行需要安装JDK1.8环境。
 
+提示: 在Oracle官网可以下载最新的[JDK安装包](http://www.oracle.com/technetwork/java/javase/downloads/index.html)。
+
 ####MongoDB
-JavaBaas使用MongoDB作为存储数据库，请先正确安装MongoDB数据库。
+JavaBaas使用MongoDB作为存储数据库，请先正确安装并启动MongoDB数据库。
 
-在`application.properties`中配置MongoDB数据库连接信息。
-
-```
-spring.data.mongodb.host = 127.0.0.1 //MongoDB数据库地址 默认为127.0.0.1
-spring.data.mongodb.database = baas //用于存储数据的数据库名称 默认为baas
-spring.data.mongodb.username = baas //用户名 不填写为无身份校验
-spring.data.mongodb.password = baas //密码 不填写为无身份校验
-spring.data.mongodb.authentication-database = admin //用于校验身份的数据库
-```
+提示: 在MongoDB官网可以下载最新的[MongoDB安装包](www.mongodb.com)。
 
 ####Redis
-JavaBaas使用Redis作为缓存引擎，请先正确安装Redis数据库。
+JavaBaas使用Redis作为缓存引擎，请先正确安装并启动Redis数据库。
 
-在`application.properties`中配置Redis数据库连接信息。
-
-```
-spring.redis.host = 127.0.0.1 //Redis数据库地址
-```
+提示: 在Redis官网可以下载最新的[Redis安装包](http://redis.io/)。
 
 ###启动
-系统依赖环境配置正确后，使用以下命令启动系统：
+Server目录下的`JavaBaas.jar`为系统启动文件，系统依赖环境配置正确后，使用以下命令启动系统：
 
 `java -jar JavaBaas.jar`
 看到以下信息，表明系统启动成功。
@@ -59,58 +49,16 @@ spring.redis.host = 127.0.0.1 //Redis数据库地址
 [main] com.staryet.baas.Main                    : Started Main in 2.653 seconds (JVM running for 3.232)
 ```
 
-###JavaBaas自定义配置
-####监听端口
-在`application.properties`中配置监听端口，不设置默认为8080。
-
-```
-server.port = 8080
-```
-
-####超级密钥
-超级密钥用于鉴定管理员的超级权限，系统的核心管理接口需要使用此权限进行调用。超级密钥可以自行设置，建议使用32位随机字符串。如：`c3ca79cca3c24147902c1114640268a5`。
-
-在`application.properties`中配置超级密钥，不设置默认为JavaBaas。
-
-注意: 为了保障数据安全，强烈建议不要使用默认密钥！
-
-```
-baas.auth.key = c3ca79cca3c24147902c1114640268a5
-```
-
-####服务器地址
-JavaBaas需要接收外部系统回调请求，因此需要配置系统部署服务器的ip地址。（本地测试时可使用127.0.0.1代替，生产环境需配置公网ip地址。）
-
-例如，在`application.properties`中配置当前服务器ip信息。
-
-```
-host = http://58.132.171.126/
-```
-
-####七牛云存储
-为了使用七牛云存储作为物理文件存储引擎，需要配置七牛云存储相关信息。
-在`application.properties`中配置以下信息。
-
-```
-qiniu.ak = 七牛云存储的帐号ak
-qiniu.sk = 七牛云存储的帐号sk
-qiniu.bucket = bucket名称
-qiniu.file.host = bucket的存储域名
-```
-
-##快速上手
+###命令行工具
 `JavaBaas`系统成功启动后，默认将在http 8080端口监听所有用户请求。此时首先要使用命令行工具`JBShell`创建应用。
 
-###命令行工具
 命令行工具`JBShell`是JavaBaas的配套工具，使用`JBShell`可以完成应用的创建删除、类的创建删除、字段的创建删除、对象的增删改查等操作，以及一些便捷的辅助功能。
 
 `JBShell`基于java编写，编译及运行需要安装JDK环境。
 
-使用以下命令启动命令行工具
+使用以下命令启动命令行工具：
 
-```
-java -jar JBShell.jar
-```
+`java -jar JBShell.jar`
 
 启动成功后显示以下信息
 
@@ -127,7 +75,7 @@ AdminKey:JavaBaas
 BAAS>
 ```
 
-###配置文件
+###配置
 `JBShell.jar `为命令行工具执行文件。同目录下的`config.properties`为配置文件。内容如下：
 
 ```
@@ -135,9 +83,9 @@ host = http://localhost:8080/api/
 key = JavaBaas
 ```
 
-其中`host`为`JavaBaas`服务器所在的地址，本地调用`JBShell`默认使用localhost即可，远程管理需设置正确的地址。
+其中`host`为`JavaBaas`服务器所在的地址，本地调用`JBShell`默认使用localhost即可，远程管理需设置正确的远程服务器地址。
 
-`key`为刚才设置的`JavaBaas`超级密钥，不设置默认为JavaBaas。
+`key`为`JavaBaas`超级密钥，不设置默认为JavaBaas。
 
 ###创建应用
 在`JavaBaas`中，最高层的组织结构为应用系统，各应用之间权限、用户、数据相互隔离。为了开始使用`JavaBaas`，我们首先需要创建一个应用。
@@ -287,5 +235,66 @@ Object deleted.
 
 ###使用客户端SDK
 我们已经成功创建了应用，构建了数据结构，并存储了一些数据。现在我们可以使用`客户端SDK`、`REST API`存取数据了。详见`客户端SDK`以及`REST API`相关文档。
+
+
+##自定义配置
+###配置文件
+Server目录下的`application.properties`为配置文件。
+
+###MongoDB配置
+在application.properties中配置MongoDB数据库连接信息。
+
+```
+spring.data.mongodb.host = 127.0.0.1 //MongoDB数据库地址 默认为127.0.0.1
+spring.data.mongodb.database = baas //用于存储数据的数据库名称 默认为baas
+spring.data.mongodb.username = baas //用户名 不填写为无身份校验
+spring.data.mongodb.password = baas //密码 不填写为无身份校验
+spring.data.mongodb.authentication-database = admin //用于校验身份的数据库
+```
+
+###Redis配置
+在application.properties中配置Redis数据库连接信息。
+
+```
+spring.redis.host = 127.0.0.1 //Redis数据库地址
+```
+
+###监听端口
+在`application.properties`中配置监听端口，不设置默认为8080。
+
+```
+server.port = 8080
+```
+
+###超级密钥
+超级密钥用于鉴定管理员的超级权限，系统的核心管理接口需要使用此权限进行调用。超级密钥可以自行设置，建议使用32位随机字符串。如：`c3ca79cca3c24147902c1114640268a5`。
+
+在`application.properties`中配置超级密钥，不设置默认为JavaBaas。
+
+注意: 为了保障数据安全，强烈建议不要使用默认密钥！
+
+```
+baas.auth.key = c3ca79cca3c24147902c1114640268a5
+```
+
+###服务器地址
+JavaBaas需要接收外部系统回调请求，因此需要配置系统部署服务器的ip地址。（本地测试时可使用127.0.0.1代替，生产环境需配置公网ip地址。）
+
+例如，在`application.properties`中配置当前服务器ip信息。
+
+```
+host = http://58.132.171.126/
+```
+
+###七牛云存储
+为了使用七牛云存储作为物理文件存储引擎，需要配置七牛云存储相关信息。
+在`application.properties`中配置以下信息。
+
+```
+qiniu.ak = 七牛云存储的帐号ak
+qiniu.sk = 七牛云存储的帐号sk
+qiniu.bucket = bucket名称
+qiniu.file.host = bucket的存储域名
+```
 
 ##常见问题
