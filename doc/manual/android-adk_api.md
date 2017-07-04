@@ -39,7 +39,7 @@ public class App extends Application {
 
 然后在`AndroidManifest.xml`中配置SDK所需的一些权限以及声明刚才创建的`App`类
 
-```xml
+```
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
