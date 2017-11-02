@@ -11,11 +11,9 @@ javabaas_bashrc="${HOME}/.bashrc"
 javabaas_zhsrc="${HOME}/.zshrc"
 
 javabaas_init_snippet=$( cat << EOF
-#**********JBSHELL PROFILE BEGIN**********
 JBSHELL_DIR="$JAVABAAS_DIR/jbshell/bin"
 export JBSHELL_DIR
 export PATH=\$JBSHELL_DIR:\$PATH
-#**********JBSHELL PROFILE END************
 EOF
 )
 
