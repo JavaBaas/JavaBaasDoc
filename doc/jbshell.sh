@@ -105,6 +105,10 @@ if [ ! -f "$javabaas_zhsrc" ]; then
 	echo "$javabaas_init_snippet" >> "$javabaas_zhsrc"
 	echo "创建并更新 ${javabaas_zhsrc}"
 	#source "$javabaas_zhsrc"
+	#之所以不打开是因为咱们是没有解决zsh报的错误信息，如果有人知道怎么解决帮忙解决一下：
+	#/Users/test/.oh-my-zsh/oh-my-zsh.sh: line 12: autoload: command not found
+    #/Users/test/.oh-my-zsh/oh-my-zsh.sh: line 31: syntax error near unexpected token `('
+    #/Users/test/.oh-my-zsh/oh-my-zsh.sh: line 31: `for config_file ($ZSH/lib/*.zsh); do'
 else
 	if [[ -z $(grep 'JBSHELL_DIR' "$javabaas_zhsrc") ]]; then
 		echo -e "\n$javabaas_init_snippet" >> "$javabaas_zhsrc"
@@ -115,9 +119,19 @@ fi
 
 
 echo "成功安装jbshell"
+echo ""
+echo "请打开一个新的终端，或者在当前终端执行下面命令:"
+echo "请打开一个新的终端，或者在当前终端执行下面命令:"
 echo "请打开一个新的终端，或者在当前终端执行下面命令:"
 echo ""
-echo "    source \"${JAVABAAS_DIR}/jbshell/export/jbexport\""
+echo "source \"${JAVABAAS_DIR}/jbshell/export/jbexport\""
 echo ""
 echo ""
-echo "开始造吧!!!"
+echo "然后输入下面的命令："
+echo "然后输入下面的命令："
+echo "然后输入下面的命令："
+echo ""
+echo "jb"
+echo ""
+echo "开始造吧..."
+echo "如果想获得jbshell的更多命令，请输入jb help"
