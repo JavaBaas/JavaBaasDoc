@@ -1,7 +1,7 @@
 # JavaBaas
 **JavaBaas** 是基于Java语言开发的后台服务框架，其核心设计目标是实现移动客户端、网页应用的后台数据存储、物理文件存储、消息推送等功能，极大的降低后台开发难度，实现快速开发。
 
-使用 **JavaBaas** 提供的工具进行简单的配置，即可完成后台搭建。后台搭建成功后，即可使用RestAPI、iOS/Android-SDK进行数据的操作。
+使用 **JavaBaas** 提供的工具进行简单的配置，即可完成后台搭建。后台搭建成功后，即可使用RestAPI、iOS/Android-SDK进行数据的增删改查等操作。
 
 项目地址：
 
@@ -37,7 +37,7 @@ docker run -p 8080:8080 javabaas/javabaas-starter
 
 执行成功后，即可使用本地8080端口访问JavaBaas环境。
 
-以上的执行方式每次会创建全新的执行环境，如需要持久化数据，需使用`DockerVolume`。
+以上的执行方式每次会创建全新的执行环境，如需要持久化数据，需使用 DockerVolume。
 
 ```
 docker run -p 8080:8080 -v /usr/javabaas:/data/db javabaas/javabaas-starter
@@ -300,9 +300,53 @@ Blog Article>del 06904d004d2d462b888800abb9d03a8b
 对象删除.
 ```
 
-### 四、使用RestAPI测试工具
-我们已经成功创建了应用，构建了数据结构，并存储了一些数据。我们可以使用`客户端SDK`、`REST API`存取数据了。
+### 四、使用RestAPI操作数据
+我们已经成功创建了应用，构建了数据结构，并存储了一些数据。现在我们可以使用`RestAPI`存取数据了。
 
+使用`RestAPI`操作数据，我们需要首先在`HTTP Header`指定需要操作的应用，使用JB-AppId指明应用id，使用JB-Key来进行鉴权，使用JB-Plat指明请求来源的平台(可选值为android/ios/cloud/js/admin)。
+
+我们可以很方便的使用`JBShell`获取应用的id、key等信息。在shell工具中输入以下命令:
+
+```
+Blog Article>token
+AppId:      5a0021c3ae07be6fd9e58bb5
+Key:        06ee7e28d4e4402a97b8ef05a6690e8f
+```
+
+此处我们只使用AppId和Key，其他信息详解请查看`JBShell`相关文档。
+
+下面我们使用`RestAPI`向`Article`类中添加一条数据。
+
+```
+curl -X POST \
+  -H 'jb-appid: 5a0021c3ae07be6fd9e58bb5' \
+  -H 'jb-key: 06ee7e28d4e4402a97b8ef05a6690e8f' \
+  -H 'jb-plat: admin' \
+  -H "Content-Type: application/json" \
+  -d '{"title":"这是一片测试文章"}' \
+  http://127.0.0.1:8080/api/object/Article
+```
+
+请求成功后，我们即向`Article`类中添加了一条新的记录。
+
+#### 获取数据
+同时，我们也可以使用`RestAPI`获取数据，如查询`Article`类中的所有数据。
+
+```
+curl -X GET \
+  -H 'jb-appid: 5a0021c3ae07be6fd9e58bb5' \
+  -H 'jb-key: 06ee7e28d4e4402a97b8ef05a6690e8f' \
+  -H 'jb-plat: admin' \
+  -H "Content-Type: application/json" \
+  http://127.0.0.1:8080/api/object/Article
+```
+
+返回结果为`Article`类中的所有数据。更多关于`RestAPI`的使用方式，请参考[RestAPI](/manual/rest_api.md)相关文档。
+
+注意: RestAPI请求必须添加请求头Content-Type:application/json
+
+
+### 五、使用RestAPI测试工具
 为了方便测试API接口，`JavaBaas`内建了`RestAPI测试工具`。启动成功后，使用浏览器访问`http://127.0.0.1:8080/explorer.html`页面即可看到API测试工具。
 
 <img src="http://oyzzvjk5k.bkt.clouddn.com/17-11-6/32511675.jpg" width="60%">
@@ -311,7 +355,7 @@ Blog Article>del 06904d004d2d462b888800abb9d03a8b
 
 <img src="http://oyzzvjk5k.bkt.clouddn.com/17-11-6/29899411.jpg" width="60%">
 
-此时会显示应用中所有类的列表，此处可以看到我们已经创建的Article类，点击后，会展示对应类的数据操作接口(增删改查、计数等)。
+此时会显示应用中所有类的列表，此处可以看到我们已经创建的`Article`类，点击后，会展示对应类的数据操作接口(增删改查、计数等)。
 
 <img src="http://oyzzvjk5k.bkt.clouddn.com/17-11-6/54361529.jpg" width="60%">
 
@@ -331,9 +375,8 @@ Blog Article>del 06904d004d2d462b888800abb9d03a8b
 
 现在我们再调用GET方法，查询表中的数据，可以看到，此时表中已经有了两条记录。
 
-### 五、使用客户端SDK
-在生产环境中，我们可以使用`客户端SDK`、`REST API`存取数据。详见`客户端SDK`以及`REST API`相关文档。
-
+### 六、使用客户端SDK
+`JavaBaas`也提供了方便的`客户端SDK`以存取数据，包括`Java` `iOS` `Android`等SDK。详见`客户端SDK`相关文档。
 
 ## 自定义配置
 ### 配置文件
@@ -365,7 +408,7 @@ server.port = 8080
 ```
 
 ### 超级密钥
-超级密钥用于鉴定管理员的超级权限，系统的核心管理接口需要使用此权限进行调用，默认密钥为`JavaBaas`。超级密钥可以自行设置，建议使用32位随机字符串。如：`c3ca79cca3c24147902c1114640268a5`。
+超级密钥用于鉴定管理员的超级权限，系统的核心管理接口需要使用此权限进行调用(以及`JBShell`工具)，默认密钥为`JavaBaas`。超级密钥可以自行设置，建议使用32位随机字符串。如：`c3ca79cca3c24147902c1114640268a5`。
 
 在`application.properties`中配置超级密钥，不设置默认为`JavaBaas`。
 
