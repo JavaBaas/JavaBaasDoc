@@ -81,7 +81,615 @@ JBUser | 用户
 JBQuery | 查询对象
 JBFile | 文件对象
 
-## JBApp-应用
+## JBObject 文档
+`JBObject`是对`JavaBaas`对复杂对象的封装，通常一个`JBObject`对应一条文档数据。
+
+>`JBObject `的一些主要的属性如下：
+
+属性名|描述
+--- | ---
+objectId | 文档id
+className | 文档对应的表名
+createdAt | 文档创建时间
+updatedAt | 文档更新时间
+acl | 文档级acl
+serverData | 文档非内建字段数据
+query | JBQuery，查询条件，在findAndModify操作时候会用到
+fetchWhenSave | 保存成功后是否更新数据
+operationQueue | 所有字段待操作队列
+
+>`JBObject`提供的一些主要的方法为：
+
+序号| 方法 | 方法说明
+--- | --- | ---
+1 | save() | [创建或者更新文档信息（同步)](java-sdk.md#创建或者更新文档信息)
+2 | saveInBackground(JBSaveCallback callback) | [创建或者更新文档信息（异步）](java-sdk.md#创建或者更新文档信息)
+3 | delete() | [删除文档信息（同步)](java-sdk.md#删除文档信息)
+4 | deleteInBackground(JBDeleteCallback callback) | [删除文档信息（异步）](java-sdk.md#删除文档信息)
+
+### 构建对象
+你可以通过下面几种方式构建`JBObject`对象：
+
+```java
+JBObject object = new JBObject("Sound");
+object.setObjectId("objectId");
+```
+
+```java
+JBObject object = JBObject.create("Sound");
+```
+
+```java
+JBObject object = JBObject.createWithOutData("Sound", "objectId");
+```
+### 支持的数据类型
+`JBObject`支持所有`JBField`字段类型。
+
+```java
+JBObject object = JBObject.create("Sound");
+// 字符串 String
+object.put("name", "soundName");
+// 数字 Number
+object.put("size", 998);
+// 布尔 Boolean
+object.put("publish", true);
+// 日期 Date
+object.put("publishTime", new Date().getTime());
+// 文件 File
+JBFile file = new JBFile();
+file.setObjectId("fileId");
+object.put("soundFile", file);
+// 对象 Object
+Map<String, Object> m3u8 = new HashMap<>();
+m3u8.put("ts1", "ts1url");
+m3u8.put("ts2", "ts2url");
+object.put("m3u8", m3u8);
+// 数组 Array
+List<String> tags = new ArrayList<>();
+tags.add("流行");
+tags.add("港台");
+object.addArray("tag", tags);
+// 指针 Pointer
+JBUser user = JBUser.getCurrentUser();
+object.put("user", user);
+```
+
+### 创建或者更新文档信息
+使用者使用普通权限，可以创建或更新文档信息。如上面 [支持的数据类型](java-sdk.md#支持的数据类型) 中的例子，可以使用同步或者异步方法进行保存，`JavaSDK`会根据`JBObject`对象中是否存在`objectId`值而选择是创建或者更新操作。
+
+```java
+// 同步
+try {
+	object.save();
+} catch (JBException e) {
+	System.out.println(e.getMessage());
+}
+
+// 异步
+object.saveInBackground(new JBSaveCallback() {
+	@Override
+	public void done(boolean success, JBException e) {
+		if (!success) {
+			System.out.println(e.getMessage());
+		}
+	}
+});
+```
+
+上面的代码执行后保存的数据如下：
+
+```json
+{
+    "_id" : "69af618624854cc9b77296b0c4c69524",
+    "acl" : {
+        "*" : {
+            "read" : true,
+            "write" : true
+        }
+    },
+    "createdAt" : NumberLong(1510111638356),
+    "updatedAt" : NumberLong(1510123750716),
+    "createdPlat" : "cloud",
+    "updatedPlat" : "cloud",
+    "m3u8" : {
+        "ts2" : "ts2url",
+        "ts1" : "ts1url"
+    },
+    "name" : "soundName",
+    "publish" : true,
+    "publishTime" : NumberLong(1510123750685),
+    "size" : 998,
+    "user" : {
+        "__type" : "Pointer",
+        "className" : "_User",
+        "_id" : "54710efba85e46a690034ba0df49e69d"
+    },
+    "tag" : [  
+        "流行", 
+        "港台"
+    ],
+    "soundFile" : {
+        "__type" : "File",
+        "className" : "_File",
+        "_id" : "09258ae6cb484b20b3f075e2768cc43f",
+        "url" : "http://youdomain.com/594895b0b55198292ae266f1/8a11682a0ca14cd1bd313812c0240e41",
+        "name" : "2017_07_14_17_09"
+    }
+}
+``` 
+
+### 原子操作
+原子操作是为解决不同客户端并发读取并修改同一文档的字段信息，因脏读而引发的写入数据错误。`JBObject` 目前支持六种原子操作：
+
+操作|描述
+--- | ---
+removeKey | 删除字段
+addArray | Array类型字段添加值
+addUniqueArray | Array类型字段添加与之前不重复的值
+removeArray | Array类型字段删除值
+increment | Number类型字段原子增加或原子减少
+multiply | Number类型字段原子倍数增加
+
+例如，原始数据为：
+
+```java
+{
+    "_id":"7e5ddc041a3b4661a0d2fd54ae288378",
+    "size":998,
+    "multiplySize":998,
+    "name":"soundName",
+    "tag":[
+        "流行",
+        "港台"
+    ],
+    "uniqueTag":[
+        "流行",
+        "港台"
+    ],
+    "removeTag":[
+        "流行",
+        "港台"
+    ]
+}
+```
+
+使用原子操作对上面的数据进行处理：
+
+```java
+JBObject object = new JBObject("Sound");
+// objectId为7e5ddc041a3b4661a0d2fd54ae288378的Sound文档
+object.setObjectId("7e5ddc041a3b4661a0d2fd54ae288378");
+// 删除字段的值
+object.removeKey("name");
+List<String> tags = new ArrayList<>();
+tags.add("流行");
+tags.add("内地");
+// 添加数组
+object.addArray("tag", tags);
+// 添加unique数组
+object.addUniqueArray("uniqueTag", tags);
+// 去掉数组值的部分内容
+object.removeArray("removeTag", tags);
+// 原子增size值
+object.increment("size");
+// 原子倍数增multiplySize值
+object.multiply("multiplySize", 10);
+object.saveInBackground(new JBSaveCallback() {
+	@Override
+	public void done(boolean success, JBException e) {
+		// code
+	}
+});
+```
+
+处理后的数据为：
+
+```json
+{
+    "_id":"7e5ddc041a3b4661a0d2fd54ae288378",
+    "size":999,
+    "multiplySize":9980,
+    "tag":[
+        "流行",
+        "港台",
+        "流行",
+        "内地"
+    ],
+    "uniqueTag":[
+        "流行",
+        "港台",
+        "内地"
+    ],
+    "removeTag":[
+        "港台"
+    ]
+}
+```
+
+### 其他保存选项
+`JBObject`支持在更新文档数据时查询当前文档是否满足一定条件，并且支持在更新后返回服务端的最新值。
+
+>使用setFetchWhenSave可以在更新数据后返回服务端的最新值。
+
+```java
+object.setFetchWhenSave(true);
+```
+
+>使用query可以在更新时判断当前文档是否满足一定条件。
+
+```java
+// 判断当前文档中size是否大于0
+JBQuery query = JBQuery.createQuery(object);
+query.whereGreaterThan("size", 0);
+object.setQuery(query);
+```
+
+### 删除文档信息
+使用者使用普通权限，可以创建文档信息。
+
+```java
+JBObject object = new JBObject("Sound");
+object.setObjectId("7e5ddc041a3b4661a0d2fd54ae288378");
+object.deleteInBackground(new JBDeleteCallback() {
+	@Override
+	public void done(boolean success, JBException e) {
+		// code
+	}
+});
+```
+
+## JBUser 用户
+`JBUser`是`JBObject`子类，主要处理和用户有关的操作。
+
+>`JBUser`的一些主要的属性如下(除了父类`JBObject`属性外)：
+
+属性名|描述
+--- | ---
+sessionToken | 用户身份鉴权
+username | 用户名
+email | 邮箱
+password | 密码
+phone | 电话
+auth | 第三方登录信息
+
+>`JBUser `提供的一些主要的方法为：
+
+序号| 方法 | 方法说明
+--- | --- | ---
+1 | signUp() | [用户名密码注册（同步)](java-sdk.md#用户名密码注册)
+2 | signUpInBackground(JBSignUpCallback callback) | [用户名密码注册（异步）](java-sdk.md#用户名密码注册)
+3 | getSmsCode(String phone) | [获取短信验证码（同步)](java-sdk.md#获取短信验证码)
+4 | getSmsCodeInBackground(String phone, JBGetSmsCodeCallback callback) | [获取短信验证码（异步）](java-sdk.md#获取短信验证码)
+5 | signUpWithSns(JBAuth auth, JBSnsType type) | [第三方社交平台注册（同步)](java-sdk.md#第三方社交平台注册)
+6 | signUpWithSnsInBackground(JBAuth auth, JBSnsType type, JBSignUpCallback callback) | [第三方登录注册（异步）](java-sdk.md#第三方社交平台注册)
+7 | login(String username, String password) | [用户名密码登录（同步)](java-sdk.md#用户名密码登录)
+8 | loginInBackground(String username, String password, JBLoginCallback callback) | [用户名密码登录（异步）](java-sdk.md#用户名密码登录)
+9 | loginWithPhone(String phone, String code) | [手机号验证码登录（同步)](java-sdk.md#手机号验证码登录)
+10 | loginWithPhoneInBackground(String phone, String code, JBLoginCallback callback) | [手机号验证码登录（异步）](java-sdk.md#手机号验证码登录)
+11 | loginWithSns(JBAuth auth, JBSnsType type) | [第三方社交平台登录（同步)](java-sdk.md#第三方社交平台登录)
+12 | loginWithSnsInBackground(JBAuth auth, JBSnsType type, JBLoginCallback callback) | [第三方社交平台登录（异步）](java-sdk.md#第三方社交平台登录)
+13 | updatePassword(String oldPassword, String newPassword) | [修改登录密码（同步)](java-sdk.md#修改登录密码)
+14 | updatePasswordInBackground(String oldPassword, String newPassword, JBUpdatePasswordCallback callback) | [修改登录密码（异步）](java-sdk.md#修改登录密码)
+15 | update() | [更新用户信息（同步)](java-sdk.md#更新用户信息)
+16 | updateInBackground(JBUpdateCallback callback) | [更新用户信息（异步）](java-sdk.md#更新用户信息)
+17 | resetSessionToken(String userId) | [重置用户sessionToken（同步)](java-sdk.md#重置用户sessionToken)
+
+### 用户名密码注册
+使用者可以使用普通权限使用用户名密码进行注册：
+
+```java
+JBUser user = new JBUser();
+// 用户名，用户名规则为"^[a-zA-Z0-9_@.]*$"
+user.setUsername("woshiwo");
+// 密码
+user.setPassword("aaaaaa");
+user.signUpInBackground(new JBSignUpCallback() {
+	@Override
+	public void done(boolean success, JBException e) {
+		//
+	}
+});
+```
+
+### 第三方社交平台注册
+使用者可以使用普通权限可以通过第三方平台注册。
+
+```java
+try {
+	JBUser user = new JBUser();
+	user.setUsername("woshiwo");
+	
+	JBAuth auth = new JBAuth();
+	// 微博、qq、微信需要accessToken
+	String accessToken = "xxxxxx";
+	auth.setAccessToken(accessToken);
+	// 微博需要uid
+	String uid = "xxxx";
+	auth.setUid(uid);
+	// 微信、qq、微信小程序需要openId或unionId，当两者都赋值的话优先使用unionId。
+	String openId = "xxxxx";
+	String unionId = "xxxxx";
+	auth.setOpenId(openId);
+	auth.setUnionId(unionId);
+	// 微信小程序需要encryptedData、code和iv
+	String encryptedData = "xxxxx";
+	String code = "xxxx";
+	String iv = "xxxxx";
+	auth.setEncryptedData(encryptedData);
+	auth.setCode(code);
+	auth.setIv(iv);
+		
+	// 根据实际，选择不同的type
+	JBSnsType type = JBSnsType.WEBAPP;
+
+	user.signUpWithSns(auth, type);
+} catch (JBException e) {
+	System.out.println(e.getMessage());
+}
+```
+
+### 用户名密码登录
+使用者可以使用普通权限可以通过用户名密码登录，登录成功后，服务端会返回该用户的所有可见信息和用户鉴权用的sessionToken。
+
+```java
+JBUser.loginInBackground("woshiwo", "aaaaaa", new JBLoginCallback() {
+	@Override
+	public void done(boolean success, JBUser user, JBException e) {
+		// 更新currentUser
+		JBUser.updateCurrentUser(user);
+	}
+});
+```
+
+### 获取短信验证码
+使用者可以使用普通权限使用手机号验证码登录时可以通过下面的方法获取短信验证码：
+
+```java
+try {
+	JBUser.getSmsCode("18988888888");
+} catch (JBException e) {
+	System.out.println(e.getMessage());
+}
+```
+
+### 手机号验证码登录
+使用者可以使用普通权限，在获取到手机有效验证码后可以通过手机号验证码方式登录，需要注意的是如果用户之前没有注册，服务端会自动为改手机号注册一个用户，用户名默认为 “phone_” 加手机号。
+
+```java
+JBUser.loginWithPhoneInBackground("18988888888", "smsCode", new JBLoginCallback() {
+	@Override
+	public void done(boolean success, JBUser user, JBException e) {
+		// code
+	}
+});
+```
+
+### 第三方社交平台登录
+使用者可以使用普通权限，并且已经通过第三方平台注册过，可以使用第三方社交平台进行登录：
+
+```java
+// auth和snsType参考第三方社交平台注册
+JBUser.loginWithSnsInBackground(auth, snsType, new JBLoginCallback() {
+	@Override
+	public void done(boolean success, JBUser user, JBException e) {
+		// code
+	}
+});
+
+```
+
+### 修改登录密码
+
+使用者可以使用普通权限，可以在登录成功后修改本人的用户名登录密码：
+
+```java
+// 旧密码为"aaaaaaa"， 新密码为"bbbbbb"
+user.updatePasswordInBackground("aaaaaaa", "bbbbbb", new JBUpdatePasswordCallback() {
+	@Override
+	public void done(boolean success, String sessionToken, JBException e) {
+		// code
+	}
+});
+```
+
+### 更新用户信息
+使用者可以使用普通权限，在成功登录后可以修改本人的一些信息：
+
+```java
+user.put("nickname", "小王");
+user.updateInBackground(new JBUpdateCallback() {
+	@Override
+	public void done(boolean success, JBException e) {
+		//code
+	}
+});
+```
+
+### 重置用户sessionToken
+使用者可以使用普通权限，在成功登录后可以重置本人的`sessionToken`，重置完`sessionToken`后，所有设备登录的该用户都会被下线。
+
+```java
+JBUser user = JBUser.getCurrentUser();
+try {
+	JBUser.resetSessionToken(user.getObjectId());
+} catch (JBException e) {
+	e.printStackTrace();
+}
+```
+
+## JBQuery 查询
+`JBQuery`主要处理和查询有关的操作。
+
+>`JBQuery`的一些主要的属性如下：
+
+属性名|描述
+--- | ---
+className | 类名
+whereSting | 查询语句(json串)
+isRunning | 是否正在查询
+conditions | 查询条件
+
+>`JBUser `提供的一些主要的方法为：
+
+序号| 方法 | 方法说明
+--- | --- | ---
+1 | get(String objectId) | [根据objectId获取对象（同步)](java-sdk.md#根据objectId获取对象)
+2 | getInBackground(String objectId, JBGetCallback<T> callback) | [根据objectId获取对象（异步）](java-sdk.md#根据objectId获取对象)
+3 | find() | [数据查询（同步)](java-sdk.md#数据查询)
+4 | findInBackground(JBFindCallBack<T> callBack) | [数据查询（异步）](java-sdk.md#数据查询)
+5 | count() | [简单统计查询（同步)](java-sdk.md#简单统计查询)
+6 | countInBackground(JBCountCallback callback) | [简单统计查询（异步）](java-sdk.md#简单统计查询)
+7 | deleteByQuery() | [批量删除（同步)](java-sdk.md#批量删除)
+8 | deleteByQueryInBackground(JBDeleteCallback callback) | [批量删除（异步）](java-sdk.md#批量删除)
+
+### 根据objectId获取对象
+使用者可以通过文档的`objectId`获取有读权限的文档数据：
+
+```java
+JBQuery query = new JBQuery("Sound");
+query.getInBackground("7e5ddc041a3b4661a0d2fd54ae288378", new JBGetCallback() {
+	@Override
+	public void done(boolean success, JBObject object, JBException e) {
+		// code
+	}
+});
+```
+
+### 数据查询
+使用者可以通过设置一些查询条件查询有读权限的相关数据，需要注意的是用户不设置查询数量限制的前提下，服务端默认返回符合条件最多100条数据，用户也可以自己设置最大返回数据量，范围为1到1000，超过1000服务端按1000条算，查询的默认排序是根据文档数据的`updatedAt`倒叙排序。
+
+```java
+// 构建基于Sound表的查询
+JBQuery query = new JBQuery("Sound");
+// 查询name等于soudName的数据
+query.whereEqualTo("name", "soudName");
+// 查询name等于otherName的数据
+query.whereNotEqualTo("name", "otherName");
+// 查询size小于10的数据
+query.whereLessThan("size", 10);
+// 查询size大于0的数据
+query.whereGreaterThan("size", 0);
+// 查询size小于等于10的数据
+query.whereLessThanOrEqualTo("size", 10);
+// 查询size大于等于0的数据
+query.whereGreaterThanOrEqualTo("size", 0);
+// 查询name字段不为空的数据
+query.whereExists("name");
+// 查询name字段为空的数据
+query.whereNotExist("name");
+// 查询name字段中包含“sound”字符串的数据
+query.whereContains("name", "sound");
+ 
+List<String> list = new ArrayList<>();
+list.add("港台");
+// 查询tag中含有list中数据的数据
+query.whereContainedIn("tag", list);
+// 查询tag中不含有list中数据的数据
+query.whereNotContainedIn("tag", list);
+// 查询name字段以“me”字符串结尾的数据
+query.whereEndWith("name", "me");
+// 查询name字段以“sou”字符串开头的数据
+query.whereStartWith("name", "sou");
+
+// 查询根据正则表达式查询的数据
+String regex = ".*o.*";
+String options = "i";
+query.whereMatches("name", regex);
+query.whereMatches("name", regex, options);
+
+// 设置查询结果返回数量最大为30
+query.setLimit(30);
+// 设置查询跳过符合条件的前60个
+query.setSkip(60);
+// 按createdAt的倒叙排序
+query.addDescendingOrder("createdAt");
+// 按size的正序排序
+query.addAscendingOrder("size");
+// 查询user的全部信息，只针对Pointer类型字段
+// 如果查询的字段对应的文档中还有Pointer字段，并且也需要查询出来
+// 则可以使用“album.user”（album是当前表中的Pointer字段，user是Album表中的一个Pointer字段）
+query.include("user");
+
+query.findInBackground(new JBFindCallBack() {
+	@Override
+	public void done(boolean success, List objects, JBException e) {
+		// code
+	}
+});
+```
+
+### 子查询
+子查询是数据查询的一种，用于构建复杂一些的查询。
+
+>例如，音频 `Sound` 类中有一个字段作者 `user` 是一个 `Pointer` 字段，它指向 `_User` 类，现在我们要查询用户的昵称 `nickname` 中含有 `ABC` 字符串的用户发布的所有音频。
+
+```java
+JBQuery query = new JBQuery("Sound");
+JBQuery subQuery = new JBQuery("_User");
+subQuery.whereContains("nickName", "ABC");
+query.whereMatchesQuery("user", subQuery);
+query.findInBackground(new JBFindCallBack() {
+	@Override
+	public void done(boolean success, List objects, JBException e) {
+		// code
+	}
+});
+```
+
+>还一种情况，例如 音频 `Sound` 类中有一个字段专辑 `album` 是一个 `Pointer` 字段，指向 `Album` 类，专辑订阅信息 `SubscriptionAlbum` 类中有两个 `Pointer` 类型字段订阅者 `user` 和专辑 `subsAlbum` (为了跟 `Sound` 中的 `album` 区分，这个字段名称命名为 `subsAlbum` ) ，分别指向 `_User` 和 `Album` 类，现知道用户 A ，其 `_id` 为 `a6159350c5964cebbe523d679b9889ae` ，要查询用户 A 订阅的专辑的所有音频数据。
+
+```java
+JBQuery query = new JBQuery("Sound");
+JBQuery subQuery = new JBQuery("SubscriptionAlbum");
+JBUser user = new JBUser();
+user.setObjectId("a6159350c5964cebbe523d679b9889ae");
+subQuery.whereEqualTo("user", user);
+query.whereMatchesKeyInQuery("album", "subsAlbum", subQuery, "Album");
+query.findInBackground(new JBFindCallBack() {
+	@Override
+	public void done(boolean success, List objects, JBException e) {
+		// code
+	}
+});
+
+```
+
+### 简单统计查询
+使用者可以使用普通权限，对某表的数据根据一定条件查询。
+
+```java
+JBQuery query = new JBQuery("Sound");
+query.whereGreaterThanOrEqualTo("size", 10);
+query.countInBackground(new JBCountCallback() {
+	@Override
+	public void done(boolean success, int count, JBException e) {
+		// code
+	}
+});
+```
+### 批量删除
+使用者可以根据查询条件批量删除一些有删除权限的文档。
+
+```java
+query.deleteByQueryInBackground(new JBDeleteCallback() {
+	@Override
+	public void done(boolean success, JBException e) {
+		// code
+	}
+});
+```
+
+## JBFile 文件
+`JBFile`是`JBObject`的子类，主要处理和文件有关的操作。
+
+>`JBFile `的一些主要的属性如下：
+
+属性名|描述
+--- | ---
+url | 链接地址
+name | 名称
+
+## JBApp 应用
 
 `JBApp`主要是处理在 `admin` 超级权限或者当前应用的 `master` 管理权限下对应用的管理。
 
@@ -164,8 +772,8 @@ try {
 }
 ```
 
-### 更新应用key或masterKey值
-使用者拥有了`admin`超级权限后可以更新应用`key`或`masterKey`值，需要注意的是，一旦更新了应用`key`或`masterKey`值，之前的`key`或`masterKey`立即不能使用，可能会影响之前已经上线的应用的请求。
+### 重置应用key或masterKey值
+使用者拥有了`admin`超级权限后可以重置应用`key`或`masterKey`值，需要注意的是，一旦重置了应用`key`或`masterKey`值，之前的`key`或`masterKey`立即不能使用，可能会影响之前已经上线的应用。
 
 ``` java
 app.resetKeyInBackground(1, new JBUpdateCallback() {
@@ -520,7 +1128,7 @@ JBClazz.importDataInBackground(data, new JBImportCallback() {
 ```
 
 
-## JBField-字段
+## JBField 字段
 `JBField`主要处理在当前应用的 `master` 权限下，和字段有关的操作。
 
 >`JBField`的一些重要的属性如下：
@@ -631,612 +1239,3 @@ JBField.listInBackground("Sound", new JBFieldListCallback() {
 	}
 });
 ```
-
-## JBObject-文档
-`JBObject`是对`JavaBaas`对复杂对象的封装，通常一个`JBObject`对应一条文档数据。
-
->`JBObject `的一些主要的属性如下：
-
-属性名|描述
---- | ---
-objectId | 文档id
-className | 文档对应的表名
-createdAt | 文档创建时间
-updatedAt | 文档更新时间
-acl | 文档级acl
-serverData | 文档非内建字段数据
-query | JBQuery，查询条件，在findAndModify操作时候会用到
-fetchWhenSave | 保存成功后是否更新数据
-operationQueue | 所有字段待操作队列
-
->`JBObject`提供的一些主要的方法为：
-
-序号| 方法 | 方法说明
---- | --- | ---
-1 | save() | [创建或者更新文档信息（同步)](java-sdk.md#创建或者更新文档信息)
-2 | saveInBackground(JBSaveCallback callback) | [创建或者更新文档信息（异步）](java-sdk.md#创建或者更新文档信息)
-3 | delete() | [删除文档信息（同步)](java-sdk.md#删除文档信息)
-4 | deleteInBackground(JBDeleteCallback callback) | [删除文档信息（异步）](java-sdk.md#删除文档信息)
-
-### 构建对象
-你可以通过下面几种方式构建`JBObject`对象：
-
-```java
-JBObject object = new JBObject("Sound");
-object.setObjectId("objectId");
-```
-
-```java
-JBObject object = JBObject.create("Sound");
-```
-
-```java
-JBObject object = JBObject.createWithOutData("Sound", "objectId");
-```
-### 支持的数据类型
-`JBObject`支持所有`JBField`字段类型。
-
-```java
-JBObject object = JBObject.create("Sound");
-// 字符串 String
-object.put("name", "soundName");
-// 数字 Number
-object.put("size", 998);
-// 布尔 Boolean
-object.put("publish", true);
-// 日期 Date
-object.put("publishTime", new Date().getTime());
-// 文件 File
-JBFile file = new JBFile();
-file.setObjectId("fileId");
-object.put("soundFile", file);
-// 对象 Object
-Map<String, Object> m3u8 = new HashMap<>();
-m3u8.put("ts1", "ts1url");
-m3u8.put("ts2", "ts2url");
-object.put("m3u8", m3u8);
-// 数组 Array
-List<String> tags = new ArrayList<>();
-tags.add("流行");
-tags.add("港台");
-object.addArray("tag", tags);
-// 指针 Pointer
-JBUser user = JBUser.getCurrentUser();
-object.put("user", user);
-```
-
-### 创建或者更新文档信息
-使用者使用普通权限，可以创建或更新文档信息。如上面 [支持的数据类型](java-sdk.md#支持的数据类型) 中的例子，可以使用同步或者异步方法进行保存，`JavaSDK`会根据`JBObject`对象中是否存在`objectId`值而选择是创建或者更新操作。
-
-```java
-// 同步
-try {
-	object.save();
-} catch (JBException e) {
-	System.out.println(e.getMessage());
-}
-
-// 异步
-object.saveInBackground(new JBSaveCallback() {
-	@Override
-	public void done(boolean success, JBException e) {
-		if (!success) {
-			System.out.println(e.getMessage());
-		}
-	}
-});
-```
-
-上面的代码执行后保存的数据如下：
-
-```json
-{
-    "_id" : "69af618624854cc9b77296b0c4c69524",
-    "acl" : {
-        "*" : {
-            "read" : true,
-            "write" : true
-        }
-    },
-    "createdAt" : NumberLong(1510111638356),
-    "updatedAt" : NumberLong(1510123750716),
-    "createdPlat" : "cloud",
-    "updatedPlat" : "cloud",
-    "m3u8" : {
-        "ts2" : "ts2url",
-        "ts1" : "ts1url"
-    },
-    "name" : "soundName",
-    "publish" : true,
-    "publishTime" : NumberLong(1510123750685),
-    "size" : 998,
-    "user" : {
-        "__type" : "Pointer",
-        "className" : "_User",
-        "_id" : "54710efba85e46a690034ba0df49e69d"
-    },
-    "tag" : [  
-        "流行", 
-        "港台"
-    ],
-    "soundFile" : {
-        "__type" : "File",
-        "className" : "_File",
-        "_id" : "09258ae6cb484b20b3f075e2768cc43f",
-        "url" : "http://youdomain.com/594895b0b55198292ae266f1/8a11682a0ca14cd1bd313812c0240e41",
-        "name" : "2017_07_14_17_09"
-    }
-}
-``` 
-
-### 原子操作
-原子操作是为解决不同客户端并发读取并修改同一文档的字段信息，因脏读而引发的写入数据错误。`JBObject` 目前支持六种原子操作：
-
-操作|描述
---- | ---
-removeKey | 删除字段
-addArray | Array类型字段添加值
-addUniqueArray | Array类型字段添加与之前不重复的值
-removeArray | Array类型字段删除值
-increment | Number类型字段原子增加或原子减少
-multiply | Number类型字段原子倍数增加
-
-例如，原始数据为：
-
-```java
-{
-    "_id":"7e5ddc041a3b4661a0d2fd54ae288378",
-    "size":998,
-    "multiplySize":998,
-    "name":"soundName",
-    "tag":[
-        "流行",
-        "港台"
-    ],
-    "uniqueTag":[
-        "流行",
-        "港台"
-    ],
-    "removeTag":[
-        "流行",
-        "港台"
-    ]
-}
-```
-
-使用原子操作对上面的数据进行处理：
-
-```java
-JBObject object = new JBObject("Sound");
-// objectId为7e5ddc041a3b4661a0d2fd54ae288378的Sound文档
-object.setObjectId("7e5ddc041a3b4661a0d2fd54ae288378");
-// 删除字段的值
-object.removeKey("name");
-List<String> tags = new ArrayList<>();
-tags.add("流行");
-tags.add("内地");
-// 添加数组
-object.addArray("tag", tags);
-// 添加unique数组
-object.addUniqueArray("uniqueTag", tags);
-// 去掉数组值的部分内容
-object.removeArray("removeTag", tags);
-// 原子增size值
-object.increment("size");
-// 原子倍数增multiplySize值
-object.multiply("multiplySize", 10);
-object.saveInBackground(new JBSaveCallback() {
-	@Override
-	public void done(boolean success, JBException e) {
-		// code
-	}
-});
-```
-
-处理后的数据为：
-
-```json
-{
-    "_id":"7e5ddc041a3b4661a0d2fd54ae288378",
-    "size":999,
-    "multiplySize":9980,
-    "tag":[
-        "流行",
-        "港台",
-        "流行",
-        "内地"
-    ],
-    "uniqueTag":[
-        "流行",
-        "港台",
-        "内地"
-    ],
-    "removeTag":[
-        "港台"
-    ]
-}
-```
-
-### 其他保存选项
-`JBObject`支持在更新文档数据时查询当前文档是否满足一定条件，并且支持在更新后返回服务端的最新值。
-
->使用setFetchWhenSave可以在更新数据后返回服务端的最新值。
-
-```java
-object.setFetchWhenSave(true);
-```
-
->使用query可以在更新时判断当前文档是否满足一定条件。
-
-```java
-// 判断当前文档中size是否大于0
-JBQuery query = JBQuery.createQuery(object);
-query.whereGreaterThan("size", 0);
-object.setQuery(query);
-```
-
-### 删除文档信息
-使用者使用普通权限，可以创建文档信息。
-
-```java
-JBObject object = new JBObject("Sound");
-object.setObjectId("7e5ddc041a3b4661a0d2fd54ae288378");
-object.deleteInBackground(new JBDeleteCallback() {
-	@Override
-	public void done(boolean success, JBException e) {
-		// code
-	}
-});
-```
-
-## JBUser-用户
-`JBUser`是`JBObject`子类，主要处理和用户有关的操作。
-
->`JBUser`的一些主要的属性如下(除了父类`JBObject`属性外)：
-
-属性名|描述
---- | ---
-sessionToken | 用户身份鉴权
-username | 用户名
-email | 邮箱
-password | 密码
-phone | 电话
-auth | 第三方登录信息
-
->`JBUser `提供的一些主要的方法为：
-
-序号| 方法 | 方法说明
---- | --- | ---
-1 | signUp() | [用户名密码注册（同步)](java-sdk.md#用户名密码注册)
-2 | signUpInBackground(JBSignUpCallback callback) | [用户名密码注册（异步）](java-sdk.md#用户名密码注册)
-3 | getSmsCode(String phone) | [获取短信验证码（同步)](java-sdk.md#获取短信验证码)
-4 | getSmsCodeInBackground(String phone, JBGetSmsCodeCallback callback) | [获取短信验证码（异步）](java-sdk.md#获取短信验证码)
-5 | signUpWithSns(JBAuth auth, JBSnsType type) | [第三方社交平台注册（同步)](java-sdk.md#第三方社交平台注册)
-6 | signUpWithSnsInBackground(JBAuth auth, JBSnsType type, JBSignUpCallback callback) | [第三方登录注册（异步）](java-sdk.md#第三方社交平台注册)
-7 | login(String username, String password) | [用户名密码登录（同步)](java-sdk.md#用户名密码登录)
-8 | loginInBackground(String username, String password, JBLoginCallback callback) | [用户名密码登录（异步）](java-sdk.md#用户名密码登录)
-9 | loginWithPhone(String phone, String code) | [手机号验证码登录（同步)](java-sdk.md#手机号验证码登录)
-10 | loginWithPhoneInBackground(String phone, String code, JBLoginCallback callback) | [手机号验证码登录（异步）](java-sdk.md#手机号验证码登录)
-11 | loginWithSns(JBAuth auth, JBSnsType type) | [第三方社交平台登录（同步)](java-sdk.md#第三方社交平台登录)
-12 | loginWithSnsInBackground(JBAuth auth, JBSnsType type, JBLoginCallback callback) | [第三方社交平台登录（异步）](java-sdk.md#第三方社交平台登录)
-13 | updatePassword(String oldPassword, String newPassword) | [修改登录密码（同步)](java-sdk.md#修改登录密码)
-14 | updatePasswordInBackground(String oldPassword, String newPassword, JBUpdatePasswordCallback callback) | [修改登录密码（异步）](java-sdk.md#修改登录密码)
-15 | update() | [更新用户信息（同步)](java-sdk.md#更新用户信息)
-16 | updateInBackground(JBUpdateCallback callback) | [更新用户信息（异步）](java-sdk.md#更新用户信息)
-17 | resetSessionToken(String userId) | [重置用户sessionToken（同步)](java-sdk.md#重置用户sessionToken)
-
-### 用户名密码注册
-使用者可以使用普通权限使用用户名密码进行注册：
-
-```java
-JBUser user = new JBUser();
-// 用户名，用户名规则为"^[a-zA-Z0-9_@.]*$"
-user.setUsername("woshiwo");
-// 密码
-user.setPassword("aaaaaa");
-user.signUpInBackground(new JBSignUpCallback() {
-	@Override
-	public void done(boolean success, JBException e) {
-		//
-	}
-});
-```
-
-### 第三方社交平台注册
-使用者可以使用普通权限可以通过第三方平台注册。
-
-```java
-try {
-	JBUser user = new JBUser();
-	user.setUsername("woshiwo");
-	
-	JBAuth auth = new JBAuth();
-	// 微博、qq、微信需要accessToken
-	String accessToken = "xxxxxx";
-	auth.setAccessToken(accessToken);
-	// 微博需要uid
-	String uid = "xxxx";
-	auth.setUid(uid);
-	// 微信、qq、微信小程序需要openId或unionId，当两者都赋值的话优先使用unionId。
-	String openId = "xxxxx";
-	String unionId = "xxxxx";
-	auth.setOpenId(openId);
-	auth.setUnionId(unionId);
-	// 微信小程序需要encryptedData、code和iv
-	String encryptedData = "xxxxx";
-	String code = "xxxx";
-	String iv = "xxxxx";
-	auth.setEncryptedData(encryptedData);
-	auth.setCode(code);
-	auth.setIv(iv);
-		
-	// 根据实际，选择不同的type
-	JBSnsType type = JBSnsType.WEBAPP;
-
-	user.signUpWithSns(auth, type);
-} catch (JBException e) {
-	System.out.println(e.getMessage());
-}
-```
-
-### 用户名密码登录
-使用者可以使用普通权限可以通过用户名密码登录，登录成功后，服务端会返回该用户的所有可见信息和用户鉴权用的sessionToken。
-
-```java
-JBUser.loginInBackground("woshiwo", "aaaaaa", new JBLoginCallback() {
-	@Override
-	public void done(boolean success, JBUser user, JBException e) {
-		// 更新currentUser
-		JBUser.updateCurrentUser(user);
-	}
-});
-```
-
-### 获取短信验证码
-使用者可以使用普通权限使用手机号验证码登录时可以通过下面的方法获取短信验证码：
-
-```java
-try {
-	JBUser.getSmsCode("18988888888");
-} catch (JBException e) {
-	System.out.println(e.getMessage());
-}
-```
-
-### 手机号验证码登录
-使用者可以使用普通权限，在获取到手机有效验证码后可以通过手机号验证码方式登录，需要注意的是如果用户之前没有注册，服务端会自动为改手机号注册一个用户，用户名默认为 “phone_” 加手机号。
-
-```java
-JBUser.loginWithPhoneInBackground("18988888888", "smsCode", new JBLoginCallback() {
-	@Override
-	public void done(boolean success, JBUser user, JBException e) {
-		// code
-	}
-});
-```
-
-### 第三方社交平台登录
-使用者可以使用普通权限，并且已经通过第三方平台注册过，可以使用第三方社交平台进行登录：
-
-```java
-// auth和snsType参考第三方社交平台注册
-JBUser.loginWithSnsInBackground(auth, snsType, new JBLoginCallback() {
-	@Override
-	public void done(boolean success, JBUser user, JBException e) {
-		// code
-	}
-});
-
-```
-
-### 修改登录密码
-
-使用者可以使用普通权限，可以在登录成功后修改本人的用户名登录密码：
-
-```java
-// 旧密码为"aaaaaaa"， 新密码为"bbbbbb"
-user.updatePasswordInBackground("aaaaaaa", "bbbbbb", new JBUpdatePasswordCallback() {
-	@Override
-	public void done(boolean success, String sessionToken, JBException e) {
-		// code
-	}
-});
-```
-
-### 更新用户信息
-使用者可以使用普通权限，在成功登录后可以修改本人的一些信息：
-
-```java
-user.put("nickname", "小王");
-user.updateInBackground(new JBUpdateCallback() {
-	@Override
-	public void done(boolean success, JBException e) {
-		//code
-	}
-});
-```
-
-### 重置用户sessionToken
-使用者可以使用普通权限，在成功登录后可以重置本人的`sessionToken`，重置完`sessionToken`后，所有设备登录的该用户都会被下线。
-
-```java
-JBUser user = JBUser.getCurrentUser();
-try {
-	JBUser.resetSessionToken(user.getObjectId());
-} catch (JBException e) {
-	e.printStackTrace();
-}
-```
-
-## JBQuery-查询
-`JBQuery`主要处理和查询有关的操作。
-
->`JBQuery`的一些主要的属性如下：
-
-属性名|描述
---- | ---
-className | 类名
-whereSting | 查询语句(json串)
-isRunning | 是否正在查询
-conditions | 查询条件
-
->`JBUser `提供的一些主要的方法为：
-
-序号| 方法 | 方法说明
---- | --- | ---
-1 | get(String objectId) | [根据objectId获取对象（同步)](java-sdk.md#根据objectId获取对象)
-2 | getInBackground(String objectId, JBGetCallback<T> callback) | [根据objectId获取对象（异步）](java-sdk.md#根据objectId获取对象)
-3 | find() | [数据查询（同步)](java-sdk.md#数据查询)
-4 | findInBackground(JBFindCallBack<T> callBack) | [数据查询（异步）](java-sdk.md#数据查询)
-5 | count() | [简单统计查询（同步)](java-sdk.md#简单统计查询)
-6 | countInBackground(JBCountCallback callback) | [简单统计查询（异步）](java-sdk.md#简单统计查询)
-7 | deleteByQuery() | [批量删除（同步)](java-sdk.md#批量删除)
-8 | deleteByQueryInBackground(JBDeleteCallback callback) | [批量删除（异步）](java-sdk.md#批量删除)
-
-### 根据objectId获取对象
-使用者可以通过文档的`objectId`获取有读权限的文档数据：
-
-```java
-JBQuery query = new JBQuery("Sound");
-query.getInBackground("7e5ddc041a3b4661a0d2fd54ae288378", new JBGetCallback() {
-	@Override
-	public void done(boolean success, JBObject object, JBException e) {
-		// code
-	}
-});
-```
-
-### 数据查询
-使用者可以通过设置一些查询条件查询有读权限的相关数据，需要注意的是用户不设置查询数量限制的前提下，服务端默认返回符合条件最多100条数据，用户也可以自己设置最大返回数据量，范围为1到1000，超过1000服务端按1000条算，查询的默认排序是根据文档数据的`updatedAt`倒叙排序。
-
-```java
-// 构建基于Sound表的查询
-JBQuery query = new JBQuery("Sound");
-// 查询name等于soudName的数据
-query.whereEqualTo("name", "soudName");
-// 查询name等于otherName的数据
-query.whereNotEqualTo("name", "otherName");
-// 查询size小于10的数据
-query.whereLessThan("size", 10);
-// 查询size大于0的数据
-query.whereGreaterThan("size", 0);
-// 查询size小于等于10的数据
-query.whereLessThanOrEqualTo("size", 10);
-// 查询size大于等于0的数据
-query.whereGreaterThanOrEqualTo("size", 0);
-// 查询name字段不为空的数据
-query.whereExists("name");
-// 查询name字段为空的数据
-query.whereNotExist("name");
-// 查询name字段中包含“sound”字符串的数据
-query.whereContains("name", "sound");
- 
-List<String> list = new ArrayList<>();
-list.add("港台");
-// 查询tag中含有list中数据的数据
-query.whereContainedIn("tag", list);
-// 查询tag中不含有list中数据的数据
-query.whereNotContainedIn("tag", list);
-// 查询name字段以“me”字符串结尾的数据
-query.whereEndWith("name", "me");
-// 查询name字段以“sou”字符串开头的数据
-query.whereStartWith("name", "sou");
-
-// 查询根据正则表达式查询的数据
-String regex = ".*o.*";
-String options = "i";
-query.whereMatches("name", regex);
-query.whereMatches("name", regex, options);
-
-// 设置查询结果返回数量最大为30
-query.setLimit(30);
-// 设置查询跳过符合条件的前60个
-query.setSkip(60);
-// 按createdAt的倒叙排序
-query.addDescendingOrder("createdAt");
-// 按size的正序排序
-query.addAscendingOrder("size");
-// 查询user的全部信息，只针对Pointer类型字段
-// 如果查询的字段对应的文档中还有Pointer字段，并且也需要查询出来
-// 则可以使用“album.user”（album是当前表中的Pointer字段，user是Album表中的一个Pointer字段）
-query.include("user");
-
-query.findInBackground(new JBFindCallBack() {
-	@Override
-	public void done(boolean success, List objects, JBException e) {
-		// code
-	}
-});
-```
-
-### 子查询
-子查询是数据查询的一种，用于构建复杂一些的查询。
-
->例如，音频 `Sound` 类中有一个字段作者 `user` 是一个 `Pointer` 字段，它指向 `_User` 类，现在我们要查询用户的昵称 `nickname` 中含有 `ABC` 字符串的用户发布的所有音频。
-
-```java
-JBQuery query = new JBQuery("Sound");
-JBQuery subQuery = new JBQuery("_User");
-subQuery.whereContains("nickName", "ABC");
-query.whereMatchesQuery("user", subQuery);
-query.findInBackground(new JBFindCallBack() {
-	@Override
-	public void done(boolean success, List objects, JBException e) {
-		// code
-	}
-});
-```
-
->还一种情况，例如 音频 `Sound` 类中有一个字段专辑 `album` 是一个 `Pointer` 字段，指向 `Album` 类，专辑订阅信息 `SubscriptionAlbum` 类中有两个 `Pointer` 类型字段订阅者 `user` 和专辑 `subsAlbum` (为了跟 `Sound` 中的 `album` 区分，这个字段名称命名为 `subsAlbum` ) ，分别指向 `_User` 和 `Album` 类，现知道用户 A ，其 `_id` 为 `a6159350c5964cebbe523d679b9889ae` ，要查询用户 A 订阅的专辑的所有音频数据。
-
-```java
-JBQuery query = new JBQuery("Sound");
-JBQuery subQuery = new JBQuery("SubscriptionAlbum");
-JBUser user = new JBUser();
-user.setObjectId("a6159350c5964cebbe523d679b9889ae");
-subQuery.whereEqualTo("user", user);
-query.whereMatchesKeyInQuery("album", "subsAlbum", subQuery, "Album");
-query.findInBackground(new JBFindCallBack() {
-	@Override
-	public void done(boolean success, List objects, JBException e) {
-		// code
-	}
-});
-
-```
-
-### 简单统计查询
-使用者可以使用普通权限，对某表的数据根据一定条件查询。
-
-```java
-JBQuery query = new JBQuery("Sound");
-query.whereGreaterThanOrEqualTo("size", 10);
-query.countInBackground(new JBCountCallback() {
-	@Override
-	public void done(boolean success, int count, JBException e) {
-		// code
-	}
-});
-```
-### 批量删除
-使用者可以根据查询条件批量删除一些有删除权限的文档。
-
-```java
-query.deleteByQueryInBackground(new JBDeleteCallback() {
-	@Override
-	public void done(boolean success, JBException e) {
-		// code
-	}
-});
-```
-
-## JBFile-文件
-`JBFile`是`JBObject`的子类，主要处理和文件有关的操作。
-
->`JBFile `的一些主要的属性如下：
-
-属性名|描述
---- | ---
-url | 链接地址
-name | 名称
-
