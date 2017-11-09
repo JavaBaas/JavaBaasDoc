@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "开始安装"
 
-JAVABAAS_SERVICE="http://7xr649.dl1.z0.glb.clouddn.com/jbshell_2000.zip"
+JAVABAAS_SERVICE="http://7xr649.dl1.z0.glb.clouddn.com/jbshell_1000.zip"
 
 if [ -z "$JAVABAAS_DIR" ]; then
     JAVABAAS_DIR="$HOME/.javabaas"
@@ -19,27 +19,6 @@ export PATH=\$JBSHELL_DIR:\$PATH
 JBSHELL_VERSION="$JBSHELL_VERSION"
 EOF
 )
-
-
-
-echo "检查是否已经安装jbshell..."
-if [ -d "$JBSHELL_DIR" ]; then
-	echo "发现jbshell"
-	echo ""
-	echo "======================================================================================================"
-	echo "你已经安装了jbshell "
-	echo " 地址为:"
-	echo ""
-	echo "    ${JBSHELL_DIR}"
-	echo ""
-	echo "请检查"
-	echo " 如果你想更新jbshell 请使用"
-	echo "    $ jb u    或   $ jb update"
-	echo ""
-	echo "======================================================================================================"
-	echo ""
-	exit 0
-fi
 
 echo "检查是否安装了unzip..."
 if [ -z $(which unzip) ]; then
@@ -122,21 +101,6 @@ else
 	fi
 fi
 
-
-echo "成功安装jbshell"
 echo ""
-echo "请打开一个新的终端，或者在当前终端执行下面命令:"
-echo "请打开一个新的终端，或者在当前终端执行下面命令:"
-echo "请打开一个新的终端，或者在当前终端执行下面命令:"
+echo "成功更新jbshell"
 echo ""
-echo "source \"${JAVABAAS_DIR}/jbshell/export/jbexport\""
-echo ""
-echo ""
-echo "然后输入下面的命令："
-echo "然后输入下面的命令："
-echo "然后输入下面的命令："
-echo ""
-echo "jb"
-echo ""
-echo "开始造吧..."
-echo "如果想获得jbshell的更多命令，请输入jb help"

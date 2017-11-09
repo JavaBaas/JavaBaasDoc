@@ -944,17 +944,23 @@ try {
 	JBAuth auth = new JBAuth();
 	// 微博、qq、微信需要accessToken
 	String accessToken = "xxxxxx";
+	auth.setAccessToken(accessToken);
 	// 微博需要uid
 	String uid = "xxxx";
+	auth.setUid(uid);
 	// 微信、qq、微信小程序需要openId或unionId，当两者都赋值的话优先使用unionId。
 	String openId = "xxxxx";
 	String unionId = "xxxxx";
+	auth.setOpenId(openId);
+	auth.setUnionId(unionId);
 	// 微信小程序需要encryptedData、code和iv
 	String encryptedData = "xxxxx";
 	String code = "xxxx";
 	String iv = "xxxxx";
-	auth.setAccessToken("");
-	
+	auth.setEncryptedData(encryptedData);
+	auth.setCode(code);
+	auth.setIv(iv);
+		
 	// 根据实际，选择不同的type
 	JBSnsType type = JBSnsType.WEBAPP;
 
