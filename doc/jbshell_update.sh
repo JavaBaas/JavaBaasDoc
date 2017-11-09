@@ -57,12 +57,14 @@ fi
 
 jbshell_zip_file="${JAVABAAS_DIR}/javabaasshell.zip"
 
+
 echo "创建jbshell目录..."
 mkdir -p "$JAVABAAS_DIR"
 echo "创建jbshell目录成功..."
 curl -L "$JAVABAAS_SERVICE" > "$jbshell_zip_file"
 echo "下载jbshell..."
-rm -f "${JAVABAAS_DIR}/jbshell"
+jbshell_dir_del="${JAVABAAS_DIR}/jbshell"
+rm -f -r "$jbshell_dir_del"
 unzip -qo "$jbshell_zip_file" -d "$JAVABAAS_DIR" -x __MACOSX/*
 rm -f "$jbshell_zip_file"
 echo "解压成功"
