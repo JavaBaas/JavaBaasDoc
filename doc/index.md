@@ -315,7 +315,7 @@ Key:        06ee7e28d4e4402a97b8ef05a6690e8f
 
 此处我们只使用AppId和Key，其他信息详解请查看`JBShell`相关文档。
 
-下面我们使用`RestAPI`向`Article`类中添加一条数据。
+下面我们使用`RestAPI`向`Article`类中添加一条数据。(此处将jb-appid/jb-key替换为刚刚查询的结果)
 
 ```
 curl -X POST \
@@ -424,7 +424,7 @@ JavaBaas需要接收外部系统回调请求，因此需要配置系统部署服
 例如，在`application.properties`中配置当前服务器ip信息。
 
 ```
-host = http://58.132.171.126/
+baas.host = http://58.132.171.126/
 ```
 
 ### 七牛云存储
@@ -432,10 +432,10 @@ host = http://58.132.171.126/
 在`application.properties`中配置以下信息。
 
 ```
-qiniu.ak = 七牛云存储的帐号ak
-qiniu.sk = 七牛云存储的帐号sk
-qiniu.bucket = bucket名称
-qiniu.file.host = bucket的存储域名
+baas.file.handler.qiniu.ak = 七牛云存储的帐号ak
+baas.file.handler.qiniu.sk = 七牛云存储的帐号sk
+baas.file.handler.qiniu.bucket = bucket名称
+baas.file.handler.qiniu.url = bucket的存储域名
 ```
 
 ## 常见问题
