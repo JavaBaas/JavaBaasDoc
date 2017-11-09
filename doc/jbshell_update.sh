@@ -14,29 +14,8 @@ javabaas_init_snippet=$( cat << EOF
 JBSHELL_DIR="$JAVABAAS_DIR/jbshell/bin"
 export JBSHELL_DIR
 export PATH=\$JBSHELL_DIR:\$PATH
-
 EOF
 )
-
-
-echo "检查是否已经安装jbshell..."
-if [ -d "$JBSHELL_DIR" ]; then
-	echo "发现jbshell"
-	echo ""
-	echo "======================================================================================================"
-	echo "你已经安装了jbshell "
-	echo " 地址为:"
-	echo ""
-	echo "    ${JBSHELL_DIR}"
-	echo ""
-	echo "请检查"
-	echo " 如果你想更新jbshell 请使用"
-	echo "    $ jb u    或   $ jb update"
-	echo ""
-	echo "======================================================================================================"
-	echo ""
-	exit 0
-fi
 
 echo "检查是否安装了unzip..."
 if [ -z $(which unzip) ]; then
@@ -83,6 +62,7 @@ mkdir -p "$JAVABAAS_DIR"
 echo "创建jbshell目录成功..."
 curl -L "$JAVABAAS_SERVICE" > "$jbshell_zip_file"
 echo "下载jbshell..."
+rm -f "$JAVABAAS_DIR/jbshell"
 unzip -qo "$jbshell_zip_file" -d "$JAVABAAS_DIR" -x __MACOSX/*
 rm -f "$jbshell_zip_file"
 echo "解压成功"
@@ -118,21 +98,6 @@ else
 	fi
 fi
 
-
-echo "成功安装jbshell"
 echo ""
-echo "请打开一个新的终端，或者在当前终端执行下面命令:"
-echo "请打开一个新的终端，或者在当前终端执行下面命令:"
-echo "请打开一个新的终端，或者在当前终端执行下面命令:"
+echo "成功更新jbshell"
 echo ""
-echo "source \"${JAVABAAS_DIR}/jbshell/export/jbexport\""
-echo ""
-echo ""
-echo "然后输入下面的命令："
-echo "然后输入下面的命令："
-echo "然后输入下面的命令："
-echo ""
-echo "jb"
-echo ""
-echo "开始造吧..."
-echo "如果想获得jbshell的更多命令，请输入jb help"
