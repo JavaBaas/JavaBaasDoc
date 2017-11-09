@@ -7,8 +7,6 @@ if [ -z "$JAVABAAS_DIR" ]; then
     JAVABAAS_DIR="$HOME/.javabaas"
 fi
 
-JBSHELL_VERSION=2000
-
 javabaas_bashrc="${HOME}/.bashrc"
 javabaas_zhsrc="${HOME}/.zshrc"
 
@@ -16,10 +14,9 @@ javabaas_init_snippet=$( cat << EOF
 JBSHELL_DIR="$JAVABAAS_DIR/jbshell/bin"
 export JBSHELL_DIR
 export PATH=\$JBSHELL_DIR:\$PATH
-JBSHELL_VERSION="$JBSHELL_VERSION"
+
 EOF
 )
-
 
 
 echo "检查是否已经安装jbshell..."
@@ -86,7 +83,6 @@ mkdir -p "$JAVABAAS_DIR"
 echo "创建jbshell目录成功..."
 curl -L "$JAVABAAS_SERVICE" > "$jbshell_zip_file"
 echo "下载jbshell..."
-rm -f "$JAVABAAS_DIR/jbshell"
 unzip -qo "$jbshell_zip_file" -d "$JAVABAAS_DIR" -x __MACOSX/*
 rm -f "$jbshell_zip_file"
 echo "解压成功"

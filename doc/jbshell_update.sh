@@ -1,13 +1,11 @@
 #!/bin/bash
 echo "开始安装"
 
-JAVABAAS_SERVICE="http://7xr649.dl1.z0.glb.clouddn.com/jbshell_1000.zip"
+JAVABAAS_SERVICE="http://7xr649.dl1.z0.glb.clouddn.com/jbshell_2000.zip"
 
 if [ -z "$JAVABAAS_DIR" ]; then
     JAVABAAS_DIR="$HOME/.javabaas"
 fi
-
-JBSHELL_VERSION=2000
 
 javabaas_bashrc="${HOME}/.bashrc"
 javabaas_zhsrc="${HOME}/.zshrc"
@@ -16,7 +14,6 @@ javabaas_init_snippet=$( cat << EOF
 JBSHELL_DIR="$JAVABAAS_DIR/jbshell/bin"
 export JBSHELL_DIR
 export PATH=\$JBSHELL_DIR:\$PATH
-JBSHELL_VERSION="$JBSHELL_VERSION"
 EOF
 )
 
