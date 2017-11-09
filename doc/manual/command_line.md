@@ -86,6 +86,21 @@ Comic>
 ```
 设置当前应用为Comic。
 
+####显示鉴权信息 token
+显示当前正在操作应用的鉴权信息。包括AppId、Key等信息。
+
+```
+Comic>token
+Timestamp:  1510217270432
+Nonce:  83ee9b42aba0455882f383fd03c3f860
+AdminSign:  d0bdd0cb587f5b544a470f53491d5356
+AppId:  5a040a88ae07be6f1fcfb98a
+Key:  01bca9e5148e43458335e288468dff54
+MasterKey:  433f4abc5b18470282daaac8e8bd272a
+Sign:  d0bdd0cb587f5b544a470f53491d5356
+MasterSign:  cd917d5a4729f24e0403646857d665a2
+```
+
 ###类相关命令
 由于所有类操作都是针对某一个应用中的类进行的，因此类相关操作需先**设置当前应用**。
 

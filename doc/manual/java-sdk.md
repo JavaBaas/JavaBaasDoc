@@ -28,16 +28,21 @@ dependencies {
 [Java_SDK 源码（github）](https://github.com/JavaBaas/JavaBaas_SDK_Java.git)
 
 ## 初始化
+首先使用`JBShell`工具获取我们需要使用的应用AppId、Key等信息。[获取鉴权信息](/manual/command_line.md#显示鉴权信息_token)
+
 `JavaSDK`提供三种权限的初始化方法，使用者可以根据实际情况使用相应的`JavaSDK`初始化方法：
-### 初始化 admin 权限
-在 `main` 函数中间调用 `JBConfig.initAdmin` 来设置你的 `admin` 超级权限初始化的信息：
+
+### 初始化 应用普通 权限
+在 `main` 函数中间调用 `JBConfig.init` 来设置你的应用普通权限初始化的信息：
 
 ``` java
   public static void main(String[] args) {
-	// 参数依次为 请求地址（"例如："http://127.0.0.1:8080/api"）、adminKey("JavaBaas")
-    JBConfig.initAdmin("http://127.0.0.1:8080/api", "JavaBaas")
+	// 参数依次为 请求地址（例如：http://127.0.0.1:8080/api）、appId("594895b0b55198292ae266f1")、key("a8c18441d7ab4dcd9ed78477015ab8b2")
+    JBConfig.init("http://127.0.0.1:8080/api", "594895b0b55198292ae266f1","a8c18441d7ab4dcd9ed78477015ab8b2")
   }
 ```
+
+提示: 普通权限用于操作数据，一般用户客户端程序。
 
 ### 初始化 master 权限
 在 `main` 函数中间调用 `JBConfig.initAdmin` 来设置你的 master 管理权限初始化的信息：
@@ -49,15 +54,19 @@ dependencies {
   }
 ```
 
-### 初始化 应用普通 权限
-在 `main` 函数中间调用 `JBConfig.init` 来设置你的应用普通权限初始化的信息：
+提示: Master权限用于无视ACL的操作数据，一般用于后台云代码服务器。
+
+### 初始化 admin 权限
+在 `main` 函数中间调用 `JBConfig.initAdmin` 来设置你的 `admin` 超级权限初始化的信息：
 
 ``` java
   public static void main(String[] args) {
-	// 参数依次为 请求地址（例如：http://127.0.0.1:8080/api）、appId("594895b0b55198292ae266f1")、key("a8c18441d7ab4dcd9ed78477015ab8b2")
-    JBConfig.init("http://127.0.0.1:8080/api", "594895b0b55198292ae266f1","a8c18441d7ab4dcd9ed78477015ab8b2")
+	// 参数依次为 请求地址（"例如："http://127.0.0.1:8080/api"）、adminKey("JavaBaas")
+    JBConfig.initAdmin("http://127.0.0.1:8080/api", "JavaBaas")
   }
 ```
+
+提示: Admin权限用于创建和管理应用
 
 ## 对象列表
 JavaSDK目前提供了包括`JBApp`、`JBClazz`、`JBField`、`JBObject`、`JBUser`、`JBQuery`、`JBFile`等主要对象（除了这些主要的对象外，JavaSDK中还有一些内部类、工具类等，不再详细介绍）。
