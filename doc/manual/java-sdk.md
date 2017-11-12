@@ -940,7 +940,7 @@ try {
 }
 ```
 
-## JBClazz-表
+## JBClazz 表
 `JBClazz`主要处理在当前应用的`master`权限下，和表有关的操作。
 
 >`JBClazz`的一些重要的属性如下：
