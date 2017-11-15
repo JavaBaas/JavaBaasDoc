@@ -33,18 +33,19 @@ baas.auth.key = V1hwT1UyRkhUblZpUjNoclVWTlZlbEpEVlhwU1FTVXpSQ1V6UkElM0QlM0Qc3Rhc
 Content-Type | 必须为 application/json
 JB-Plat | 调用接口的平台 取值为js或android或ios
 JB-Timestamp | 客户端产生本次请求的 unix 时间戳，精确到毫秒。
+JB-Nonce | 本次请求的校验码。无规则不重复随机字符串。
 JB-AppId | 调用应用的AppId，用以表示正在操作哪一个应用。（当使用管理授权或普通授权时需要）
-JB-AdminSign（三选一）|将adminKey加上":"再加上timestamp组成的字符串，再对它做 MD5 签名后的结果。
-JB-MasterSign（三选一） | 将masterKey加上":"再加上timestamp组成的字符串，再对它做 MD5 签名后的结果。
-JB-Sign（三选一） | 将key加上":"再加上timestamp组成的字符串，再对它做 MD5 签名后的结果。
+JB-AdminSign（三选一）|将adminKey:JB-Timestamp:JB-Nonce组成的字符串，再对它做 MD5 签名后的结果。
+JB-MasterSign（三选一） | 将masterKey:JB-Timestamp:JB-Nonce组成的字符串，再对它做 MD5 签名后的结果。
+JB-Sign（三选一） | 将key:JB-Timestamp:JB-Nonce组成的字符串，再对它做 MD5 签名后的结果。
 
 其中`JB-AdminSign` `JB-MasterSign` `JB-Sign`为三选一。使用`JB-AdminSign`时为超级授权、使用`JB-MasterSign`时为管理授权、使用`JB-Sign`时为普通授权。使用管理授权或普通授权时为了指定被操作的App，因此必须有`JB-AppId`。
 
 加密计算实现（Java）：
 
 ```java
-public String encrypt(String key, String timeStamp) {
-        return md5(key + ":" + timeStamp);
+public String encrypt(String key, String timeStamp, String nonce) {
+        return md5(key + ":" + timeStamp + ":" + nonce);
     }
 ```
 
@@ -54,9 +55,9 @@ public String encrypt(String key, String timeStamp) {
 
 ```
 Server-IP: http://127.0.0.1:8080/
-JB-AppId:  56cd5194c6db7c372fd1563f
-key:  8fdd2c7fad56430688f192ca835b524b
-masterKey:  53a0b6967e2f4ac399341c4ac93f2db3
+JB-AppId:  594895b0b55198292ae266f1
+key:  a8c18441d7ab4dcd9ed78477015ab8b2
+masterKey:  cebde78a2d2d48c9870cf4887cbb3eb1
 ```
 
 ##响应格式
@@ -73,7 +74,6 @@ URL|METHOD|描述
 /object/{className}|POST|[创建对象](rest_api.md#创建对象)
 /object/{className}/{id}|GET|[获取对象](rest_api.md#获取对象)
 /object/{className}/{id}|PUT|[更新对象](rest_api.md#更新对象)
-/object/{className}/{id}/inc|PUT|[对象原子操作](rest_api.md#对象原子操作)
 /object/{className}|GET|[查询对象](rest_api.md#查询对象)
 /object/{className}/count|GET|[查询对象个数](rest_api.md#查询对象个数)
 /object/{className}/{id}|DELETE|[删除对象](rest_api.md#删除对象)
@@ -121,6 +121,9 @@ URL|METHOD|描述
 /user/{id}/updatePassword|PUT|[修改用户密码](rest_api.md#修改用户密码)
 /user/login|GET|[用户登录](rest_api.md#用户登录)
 /user/loginWithSns/{platform}|POST|[第三方登录](rest_api.md#第三方登录)
+/user/registerWithSns/{platform}|POST|[第三方注册](rest_api.md#第三方注册)
+/user/getSmsCode/{phone}|GET|[获取注册登录短信验证码](rest_api.md#获取注册登录短信验证码)
+/user/loginWithPhone |POST|[手机验证码注册登录](rest_api.md#手机验证码注册登录)
 /user/{id}/resetSessionToken|PUT|[重置用户SessionToken](rest_api.md#重置用户SessionToken)
 
 ###文件（管理权限 普通权限）
@@ -207,9 +210,10 @@ http://127.0.0.1:8080/api/object/Sound/6e929370b8674fd885a191052a34c259
 
 ```
 curl -X POST \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -d '{"title":"音频名称","length":300,"content":"音频的描述"}' \
@@ -242,9 +246,10 @@ curl -X POST \
 
 ```
 curl -X GET \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/object/Sound/b54aa8a1ab5945649c628b63b65c1db9
@@ -276,9 +281,10 @@ curl -X GET \
 
 ```
 curl -X PUT \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -d '{"title":"修改后的音频名称"}' \
@@ -316,18 +322,19 @@ curl -X PUT \
 }
 ```
 
-###对象原子操作
-对于Nuber类型的字段，例如我们需要记录某个音频的打开次数(readCount)，然而对于一个热门音频，可能会有很多并发打开音频操作，如果每次我们都是通过请求获取改音频目前的readCount，然后加1后再通过请求写到后台，那么这极容易造成数据脏读，引发冲突和覆盖，最终导致结果不准。对于这种场景，JavaBaas提供了对象的原子操作:
+### 对象原子操作
+原子操作是对象更新的一种，对于Nuber类型的字段，例如我们需要记录某个音频的打开次数(readCount)，然而对于一个热门音频，可能会有很多并发打开音频操作，如果每次我们都是通过请求获取改音频目前的readCount，然后加1后再通过请求写到后台，那么这极容易造成数据脏读，引发冲突和覆盖，最终导致结果不准。对于这种场景，JavaBaas提供了对象的原子操作:
 
 ```
 curl -X PUT \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
-  -d '{"readCount":1}' \
-	http://127.0.0.1:8080/api/object/Sound/b54aa8a1ab5945649c628b63b65c1db9/inc
+  -d '{"readCount":{"__op":"Increment", "amount":1}}' \
+	http://127.0.0.1:8080/api/object/Sound/b54aa8a1ab5945649c628b63b65c1db9
 ```
 
 请求成功后，通过 [获取对象](rest_api.md#获取对象) 可以看到之前创建的一条Sound对象中 `readCount` 字段已经被加1：
@@ -352,14 +359,28 @@ curl -X PUT \
 }
 ```
 
+包括上面的原子操作，JavaBaas共提供了六种原子操作。
+
+__op| 附加参数 | 描述
+--- | --- | ---
+Delete | 无 | 删除字段
+Add | objects | Array类型字段添加值
+AddUnique | objects | Array类型字段添加与之前不重复的值
+Remove | objects | Array类型字段删除值
+Increment | amount | Number类型字段原子增加或原子减少
+Multiply | amount | Number类型字段原子倍数增加
+
+
+
 ###查询对象
 我们通过发送一个 GET 请求到类的 URL 上，从而一次获取多个对象：
 
 ```
 curl -X GET \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+ -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/object/Sound
@@ -428,9 +449,10 @@ curl -X GET \
 
 ```
 curl -X GET \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -G \
@@ -455,9 +477,10 @@ curl -X GET \
 
 ```
 curl -X DELETE \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/object/Sound/b54aa8a1ab5945649c628b63b65c1db9
@@ -480,9 +503,10 @@ curl -X DELETE \
 
 ```
 curl -X DELETE \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -G \
@@ -502,9 +526,10 @@ curl -X DELETE \
 
 ```
 curl -X GET \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -G \
@@ -568,10 +593,11 @@ $sub | 子查询
 
 ```
 curl -X GET \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
-  -H "JB-Plat:js" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
+    -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -G \
   --data-urlencode 'where={"readCount":{"$lt":5}}' \
@@ -602,9 +628,10 @@ curl -X GET \
 
 ```
 curl -X GET \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -G \
@@ -645,9 +672,10 @@ curl -X GET \
 
 ```
 curl -X GET \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -G \
@@ -659,9 +687,10 @@ curl -X GET \
 
 ```
 curl -X GET \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -G \
@@ -708,9 +737,10 @@ curl -X GET \
 
 ```
 curl -X GET \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -G \
@@ -724,9 +754,10 @@ curl -X GET \
 
 ```
 curl -X GET \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -G \
@@ -779,9 +810,10 @@ curl -X GET \
 
 ```
 curl -X GET \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -G \
@@ -807,9 +839,10 @@ JavaBaas提供了一种字段类型 `Pointer` ，`Pointer` 类型是用来设定
 
 ```
 curl -X GET \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -G \
@@ -846,9 +879,10 @@ curl -X GET \
 
 ```
 curl -X GET \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -G \
@@ -892,9 +926,10 @@ curl -X GET \
 
 ```
 curl -X GET \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -G \
@@ -907,9 +942,10 @@ curl -X GET \
 
 ```
 curl -X GET \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -G \
@@ -927,9 +963,10 @@ curl -X GET \
 
 ```
 curl -X GET \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -G \
@@ -943,9 +980,10 @@ curl -X GET \
 
 ```
 curl -X GET \
-  -H "JB-Timestamp:1458726351581" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:4bf9845332d1f6256341abcd269b074e" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -G \
@@ -964,6 +1002,7 @@ curl -X GET \
 curl -X POST \
   -H "JB-Timestamp:1459134010861" \
   -H "JB-AdminSign:984df38bc629c55aade4b1951631f6b9" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -d '{"name":"NewApp"}' \
@@ -994,6 +1033,7 @@ curl -X POST \
 curl -X GET \
   -H "JB-Timestamp:1459134010861" \
   -H "JB-AdminSign:984df38bc629c55aade4b1951631f6b9" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/admin/app
@@ -1033,6 +1073,7 @@ curl -X GET \
 curl -X GET \
   -H "JB-Timestamp:1459134010861" \
   -H "JB-AdminSign:984df38bc629c55aade4b1951631f6b9" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/admin/app/56f89eb7ffe4f21c3d3e8f5e
@@ -1044,6 +1085,7 @@ curl -X GET \
 curl -X DELETE \
   -H "JB-Timestamp:1459134010861" \
   -H "JB-AdminSign:984df38bc629c55aade4b1951631f6b9" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/admin/app/56f89eb7ffe4f21c3d3e8f5e
@@ -1055,6 +1097,7 @@ curl -X DELETE \
 curl -X PUT \
   -H "JB-Timestamp:1459134010861" \
   -H "JB-AdminSign:984df38bc629c55aade4b1951631f6b9" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/admin/app/56cd5194c6db7c372fd1563f/resetKey
@@ -1067,6 +1110,7 @@ curl -X PUT \
 curl -X PUT \
   -H "JB-Timestamp:1459134010861" \
   -H "JB-AdminSign:984df38bc629c55aade4b1951631f6b9" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/admin/app/56cd5194c6db7c372fd1563f/resetMasterKey
@@ -1079,6 +1123,7 @@ curl -X PUT \
 curl -X GET \
   -H "JB-Timestamp:1459134010861" \
   -H "JB-AdminSign:984df38bc629c55aade4b1951631f6b9" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/admin/app/56cd5194c6db7c372fd1563f/export
@@ -1134,6 +1179,7 @@ curl -X GET \
 curl -X POST \
   -H "JB-Timestamp:1459134010861" \
   -H "JB-AdminSign:984df38bc629c55aade4b1951631f6b9" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -d '{这里是应用备份数据的 json 串}' \
@@ -1150,6 +1196,7 @@ curl -X POST \
   -H "JB-Timestamp:1459137092965" \
   -H "JB-AppId:56cd5194c6db7c372fd1563f" \
   -H "JB-MasterSign:a869a91a43496ae3a16d8e9b07cf8b69" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -d '{"name":"NewClass"}' \
@@ -1163,6 +1210,7 @@ curl -X GET \
   -H "JB-Timestamp:1459137092965" \
   -H "JB-AppId:56cd5194c6db7c372fd1563f" \
   -H "JB-MasterSign:a869a91a43496ae3a16d8e9b07cf8b69" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/master/clazz
@@ -1237,6 +1285,7 @@ curl -X GET \
   -H "JB-Timestamp:1459137092965" \
   -H "JB-AppId:56cd5194c6db7c372fd1563f" \
   -H "JB-MasterSign:a869a91a43496ae3a16d8e9b07cf8b69" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/master/clazz/Sound
@@ -1249,6 +1298,7 @@ curl -X DELETE \
   -H "JB-Timestamp:1459137092965" \
   -H "JB-AppId:56cd5194c6db7c372fd1563f" \
   -H "JB-MasterSign:a869a91a43496ae3a16d8e9b07cf8b69" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/master/clazz/_User
@@ -1262,6 +1312,7 @@ curl -X GET \
   -H "JB-Timestamp:1459137092965" \
   -H "JB-AppId:56cd5194c6db7c372fd1563f" \
   -H "JB-MasterSign:a869a91a43496ae3a16d8e9b07cf8b69" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/master/clazz/Sound/export
@@ -1307,6 +1358,7 @@ curl -X POST \
   -H "JB-Timestamp:1459137092965" \
   -H "JB-AppId:56cd5194c6db7c372fd1563f" \
   -H "JB-MasterSign:a869a91a43496ae3a16d8e9b07cf8b69" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -d '{这里是类结构化数据的 json 串}' \
@@ -1320,6 +1372,7 @@ curl -X POST \
   -H "JB-Timestamp:1459137092965" \
   -H "JB-AppId:56cd5194c6db7c372fd1563f" \
   -H "JB-MasterSign:a869a91a43496ae3a16d8e9b07cf8b69" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -d '{"a6159350c5964cebbe523d679b9889ae":{"find":true,"insert":true}}' \
@@ -1337,6 +1390,7 @@ curl -X POST \
   -H "JB-Timestamp:1459137092965" \
   -H "JB-AppId:56cd5194c6db7c372fd1563f" \
   -H "JB-MasterSign:a869a91a43496ae3a16d8e9b07cf8b69" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -d '{"name":"newFiled","type":1}' \
@@ -1350,6 +1404,7 @@ curl -X GET \
   -H "JB-Timestamp:1459137092965" \
   -H "JB-AppId:56cd5194c6db7c372fd1563f" \
   -H "JB-MasterSign:a869a91a43496ae3a16d8e9b07cf8b69" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/master/clazz/Sound/field
@@ -1402,6 +1457,7 @@ curl -X GET \
   -H "JB-Timestamp:1459137092965" \
   -H "JB-AppId:56cd5194c6db7c372fd1563f" \
   -H "JB-MasterSign:a869a91a43496ae3a16d8e9b07cf8b69" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/master/clazz/Sound/field/newFiled
@@ -1414,6 +1470,7 @@ curl -X PUT \
   -H "JB-Timestamp:1459137092965" \
   -H "JB-AppId:56cd5194c6db7c372fd1563f" \
   -H "JB-MasterSign:a869a91a43496ae3a16d8e9b07cf8b69" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -d '{"security":true}' \
@@ -1429,6 +1486,7 @@ curl -X DELETE \
   -H "JB-Timestamp:1459137092965" \
   -H "JB-AppId:56cd5194c6db7c372fd1563f" \
   -H "JB-MasterSign:a869a91a43496ae3a16d8e9b07cf8b69" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/master/clazz/Sound/field/newFiled
@@ -1446,9 +1504,10 @@ curl -X DELETE \
 
 ```
 curl -X POST \
-  -H "JB-Timestamp:1459823352367" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:3f0473567b1635a0b83648a75e895ff7" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "Content-Type: application/json" \
   -d '{"username":"codi","password":"123456","nickname":"Codi"}' \
 	http://127.0.0.1:8080/api/users
@@ -1476,9 +1535,10 @@ curl -X POST \
 
 ```
 curl -X GET \
-  -H "JB-Timestamp:1459823352367" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:3f0473567b1635a0b83648a75e895ff7" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "Content-Type: application/json" \
   -G \
   --data-urlencode 'username=codi' \
@@ -1516,9 +1576,10 @@ curl -X GET \
 
 ```
 curl -X POST \
-  -H "JB-Timestamp:1459823352367" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:3f0473567b1635a0b83648a75e895ff7" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-SessionToken:9ce57fb007544d318b642d084989bc40" \
   -H "Content-Type: application/json" \
   -d '{"accessToken":"69B307BA98F8C8D2455CC8D9040A6A96","uid":"AB782D5190C50B588B536145FEEF6A0F"}' \
@@ -1537,9 +1598,10 @@ curl -X POST \
 
 ```
 curl -X DELETE \
-  -H "JB-Timestamp:1459823352367" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:3f0473567b1635a0b83648a75e895ff7" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-SessionToken:9ce57fb007544d318b642d084989bc40" \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/a6159350c5964cebbe523d679b9889ae/release/{platform}
@@ -1554,9 +1616,10 @@ curl -X DELETE \
 你可以通过发送请求修改用户信息：
 ```
 curl -X PUT \
-  -H "JB-Timestamp:1459823352367" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:3f0473567b1635a0b83648a75e895ff7" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-SessionToken:9ce57fb007544d318b642d084989bc40" \
   -H "Content-Type: application/json" \
   -d '{"oldPassword":"123456","newPassword":"654321"}' \
@@ -1568,9 +1631,10 @@ curl -X PUT \
 
 ```
 curl -X PUT \
-  -H "JB-Timestamp:1459823352367" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:3f0473567b1635a0b83648a75e895ff7" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-SessionToken:9ce57fb007544d318b642d084989bc40" \
   -H "Content-Type: application/json" \
   -d '{"oldPassword":"123456","newPassword":"654321"}' \
@@ -1583,23 +1647,64 @@ curl -X PUT \
 * new_password:用户的新密码
 
 ###第三方登录
-用户于第三方平台绑定后，可以使用第三方平台授权信息进行登录操作。登录成功后，会获得所有的用户信息。
+用户于第三方平台绑定后，可以使用第三方平台授权信息进行登录操作。登录成功后，会获得所有的用户信息。<br />
+
+微博：
 
 ```
 curl -X POST \
-  -H "JB-Timestamp:1459823352367" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:3f0473567b1635a0b83648a75e895ff7" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "Content-Type: application/json" \
   -d '{"accessToken":"69B307BA98F8C8D2455CC8D9040A6A96","uid":"AB782D5190C50B588B536145FEEF6A0F"}' \
-	http://127.0.0.1:8080/api/user/loginWithSns/{platform}
+	http://127.0.0.1:8080/api/user/loginWithSns/1
+```
+qq：
+
+```
+curl -X POST \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
+  -H "Content-Type: application/json" \
+  -d '{"accessToken":"69B307BA98F8C8D2455CC8D9040A6A96","openId":"AB782D5190C50B588B536145FEEF6A0F"}' \
+	http://127.0.0.1:8080/api/user/loginWithSns/2
+```
+微信：
+
+```
+curl -X POST \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
+  -H "Content-Type: application/json" \
+  -d '{"accessToken":"69B307BA98F8C8D2455CC8D9040A6A96","uninoId":"AB782D5190C50B588B536145FEEF6A0F"}' \
+	http://127.0.0.1:8080/api/user/loginWithSns/3
+```
+微信小程序：
+
+```
+curl -X POST \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
+  -H "Content-Type: application/json" \
+  -d '{"uninoId":"AB782D5190C50B588B536145FEEF6A0F", "encryptedData":"HSUEJ2D5190CJEIKFHBWJWK45OEPQLSM","iv":"JSUEJSHSBWWK"}' \
+	http://127.0.0.1:8080/api/user/loginWithSns/4
 ```
 
 其中：
 
-* platform:第三方平台的名称，微博:weibo、qq:qq、微信:weixin。
-* accessToken:使用第三方平台授权时获取的token
-* uid:使用第三方平台授权时获取的用户身份表示，其中微博取uid字段，qq、微信取openId字段
+* platform:数值，1：微博，2：qq，3：微信，4：微信小程序
+* accessToken:使用微博、qq、微信第三方平台授权时获取的token，微信小程序登录不需要提交。
+* uid:微博注册登录需要，为微博授权后返回的uid
+* openId、unionId：qq、微信、微信小程序注册登录需要，openId和unionId同时都提交时，优先使用unionId。
+* encryptedData、code、iv：微信小程序注册登录需要。
 
 返回用户信息。
 
@@ -1620,6 +1725,51 @@ curl -X POST \
 }
 ```
 
+### 第三方注册
+如过希望在第三方登录时，没有注册过自动注册新用户，可以通过下面的请求：
+
+```
+curl -X POST \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
+  -H "Content-Type: application/json" \
+  -d '{"accessToken":"69B307BA98F8C8D2455CC8D9040A6A96","uninoId":"AB782D5190C50B588B536145FEEF6A0F"}' \
+	http://127.0.0.1:8080/api/user/registerWithSns/3
+```
+
+该请求是微信注册登录，其他平台可参考[第三方登录](rest_api.md#第三方登录)。
+
+### 获取注册登录短信验证码
+通过下面的请求可以获取注册登录短信验证码。
+
+```
+curl -X GET \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
+  -H "Content-Type: application/json" \
+	http://127.0.0.1:8080/api/user/getSmsCode/{phone}
+```
+
+* phone:手机号
+
+### 手机验证码注册登录
+使用下面的请求可以进行手机验证码注册登录
+
+```
+curl -X POST \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
+  -H "Content-Type: application/json" \
+  -d '{"phone":"13888888888","code":"123242"}' \
+	http://127.0.0.1:8080/api/user/loginWithPhone
+```
+
 ##文件
 JavaBaas 目前的文件系统使用第三方的 [七牛云存储](http://www.qiniu.com) 。
 
@@ -1629,9 +1779,10 @@ JavaBaas 目前的文件系统使用第三方的 [七牛云存储](http://www.qi
 
 ```
 curl -X GET \
-  -H "JB-Timestamp:1459137092965" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:a869a91a43496ae3a16d8e9b07cf8b69" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/file/getToken?fileName=filename&platform=qiniu
@@ -1662,6 +1813,7 @@ curl -X POST \
   -H "JB-Timestamp:1459137092965" \
   -H "JB-AppId:56cd5194c6db7c372fd1563f" \
   -H "JB-MasterSign:a869a91a43496ae3a16d8e9b07cf8b69" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
 	http://127.0.0.1:8080/api/file/master/process?fileId=481&a91a43496ae3a16d8e9457cf8n90&platform=qiniu
@@ -1678,6 +1830,7 @@ curl -X POST \
   -H "JB-Timestamp:1459829784178" \
   -H "JB-AppId:56cd5194c6db7c372fd1563f" \
   -H "JB-MasterSign:8a1afca2fbd8ef89e52211cbcf799812" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -d '{"cloudFunctions":["cloudMethod1","cloudMethod2"],"hookSettings":{"Sound":{"afterInsert":true,"afterDelete":true}}}' \
@@ -1692,6 +1845,7 @@ curl -X DELETE \
   -H "JB-Timestamp:1459829784178" \
   -H "JB-AppId:56cd5194c6db7c372fd1563f" \
   -H "JB-MasterSign:8a1afca2fbd8ef89e52211cbcf799812" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \ 
 	http://127.0.0.1:8080/api/master/cloud
@@ -1705,6 +1859,7 @@ curl -X GET \
   -H "JB-Timestamp:1459829784178" \
   -H "JB-AppId:56cd5194c6db7c372fd1563f" \
   -H "JB-MasterSign:8a1afca2fbd8ef89e52211cbcf799812" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \ 
 	http://127.0.0.1:8080/api/cloud/cloudMethod1
@@ -1716,9 +1871,10 @@ JavaBaas提供了接口，供注册和记录设备，从而用于消息推送活
 
 ```
 curl -X POST \
-  -H "JB-Timestamp:1459137092965" \
-  -H "JB-AppId:56cd5194c6db7c372fd1563f" \
-  -H "JB-Sign:a869a91a43496ae3a16d8e9b07cf8b69" \
+  -H "JB-Timestamp:1510221226269" \
+  -H "JB-AppId:594895b0b55198292ae266f1" \
+  -H "JB-Sign:5e65a127a4f976d1edfac0e2abaa3383" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \
   -d '{"deviceType":"ios","deviceToken":"72383872abb322122ba7788999b8839"}' \
@@ -1736,6 +1892,7 @@ curl -X POST \
   -H "JB-Timestamp:1459829784178" \
   -H "JB-AppId:56cd5194c6db7c372fd1563f" \
   -H "JB-MasterSign:8a1afca2fbd8ef89e52211cbcf799812" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \ 
   -d '{"type":4,"objectId":"62873a95570c429aaadb971e0d2dea25"}' \
@@ -1752,6 +1909,7 @@ curl -X PUT \
   -H "JB-Timestamp:1459829784178" \
   -H "JB-AppId:56cd5194c6db7c372fd1563f" \
   -H "JB-MasterSign:8a1afca2fbd8ef89e52211cbcf799812" \
+  -H "JB-Nonce:0613edd636ac4e99aa20aeaab04be15c" \
   -H "JB-Plat:js" \
   -H "Content-Type: application/json" \ 
   -d '{"key":"ahsfh392223jjk49034kjh98","secret":"kskhhhj987663902"}' \
