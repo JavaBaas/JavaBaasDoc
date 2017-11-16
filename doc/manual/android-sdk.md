@@ -3,50 +3,49 @@
 
 #### Maven自动导入安装
 
-``implementation 'com.javabaas:javasdk:2.0.0'``
+``implementation 'com.javabaas:javasdk:+'``
 
 #### SDK初始化：
 
-新建一个类 `App`继承自`Application `类：
+在系统启动的地方，如自己的Application类中注册SDK：
 
 ```java
 public class App extends Application {
 
     @Override
     public void onCreate() {
-        super.onCreate();
-
-        // 初始化参数依次为 后台服务器地址,AppId, AppKey
-      JBConfig.init("http://139.198.5.252:9000/api","59f85aee12a0aa06cb8539a7","4a4b67e87db24adbabfc5c64c1343dd2");
+		super.onCreate();
+		
+		// 初始化参数依次为 后台服务器地址,AppId, AppKey
+		JBConfig.init("http://139.198.5.252:9000/api","59f85aee12a0aa06cb8539a7","4a4b67e87db24adbabfc5c64c1343dd2");
     }
 }
 ```
 
-然后在`AndroidManifest.xml`中配置SDK所需的一些权限以及声明刚才创建的`App`类
+然后在`AndroidManifest.xml`中配置SDK所需的一些权限
 
 ```
-    <uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.INTERNET" />
 ```
 
 SDK配置完成，可以进行一些简单的访问测试：
+确保服务器端已经创建一个表叫`Test`
 
-确保服务器端已经创建一个表叫`test`
 ```java
 public void onSave(View view) {
-       final JBObject testC = new JBObject("test");
-       testC.put("testA", "测试A");
-       testC.put("testB", "测试B");
-       testC.saveInBackground(new JBBooleanCallback() {
-            @Override
-            public void done(boolean success, JBException e) {
-                if (success){
-                    Log.d(TAG,"保存成功");
-                    loadData();
-                }else {
-                Log.d(TAG,"保存失败");
-                }
-            }
-        }););
+   final JBObject testC = new JBObject("Test");
+   testC.put("testA", "测试A");
+   testC.put("testB", "测试B");
+   testC.saveInBackground(new JBBooleanCallback() {
+        @Override
+        public void done(boolean success, JBException e) {
+			if (success){
+				Log.d(TAG,"保存成功");
+			}else {
+				Log.d(TAG,"保存失败");
+			}
+        }
+    });
 }
 ```
 
@@ -61,19 +60,19 @@ JBObject jbObject = new JBObject("FoodLike");
 jbObject.put("foodName","dumpling");
 jbObject.put("userName","ZhangSan");
 ```
-有几点需要注意:
+>有几点需要注意:
 
 * 每个`JBOject`都必须在云端有对应的数据库表和相应的字段。
 * 每个`JBOject`都有保留字段，分别为`_id``acl``createdPlat``updatedPlat``createdAt``updatedAt`等，这些字段由系统自动生成和修改，不需要开发者进行指定。
 
 ### 2.2 同步与异步
-  JavaBaas提供了数据检索，保存，更新，删除，查询的同步与异步的方法。  
+JavaBaas提供了数据检索，保存，更新，删除，查询的同步与异步的方法。  
   
-  注: 在Android UI主线程中调用同步的方法，可能会导致UI主线程阻塞。所以，在UI主线程中请使用异步的方式。
+注: 在Android UI主线程中调用同步的方法，可能会导致UI主线程阻塞。所以，在UI主线程中请使用异步的方式。
   
 
 ### 2.3 检索对象
- 如果你知道了云端中某条数据的`objectId`，那么可以通过以下代码获取此条数据对应的`JBOject`对象:
+如果你知道了云端中某条数据的`objectId`，那么可以通过以下代码获取此条数据对应的`JBOject`对象:
 
 ```java
 1.同步检索:
@@ -81,25 +80,25 @@ JBQuery<JBObject> jbQuery = JBQuery.getInstance("FoodLike");
 jbQuery.whereEqualTo("_id", objectID);
 JBObject result;
 try {
-		List<JBObject> resultList = jbQuery.find();
-		result = resultList.get(0);
+	List<JBObject> resultList = jbQuery.find();
+	result = resultList.get(0);
 } catch (JBException e) {
-		e.printStackTrace();
+	e.printStackTrace();
 }
 
 2.异步检索:
 JBQuery<JBObject> jbQuery = JBQuery.getInstance("FoodLike");
 jbQuery.whereEqualTo("_id", objectID);
 jbQuery.findInBackground(new JBFindCallBack<JBObject>() {
-            @Override
-            public void done(boolean success, List<JBObject> objects, JBException e) {
-                if (success){
-                Log.d(TAG,"查询成功");
-                }else {
-                Log.d(TAG,"查询失败");
-                }
-            }
-        });
+	@Override
+	public void done(boolean success, List<JBObject> objects, JBException e) {
+		if (success){
+		Log.d(TAG,"查询成功");
+		}else {
+		Log.d(TAG,"查询失败");
+		}
+	}
+});
 ```
       
 ### 2.4 保存对象
@@ -108,25 +107,26 @@ jbQuery.findInBackground(new JBFindCallBack<JBObject>() {
 ```java
 1.同步保存:
 try {
-		jbObject.save();
-		Log.d(TAG , "保存成功");
+	jbObject.save();
+	Log.d(TAG , "保存成功");
 } catch (JBException e) {
-		e.printStackTrace();
+	e.printStackTrace();
 }
 
 2.异步保存:
 jbObject.saveInBackground(new JBBooleanCallback() {
-            @Override
-            public void done(boolean b, JBException e) {
-                if (b){
-                    Log.d(TAG , "保存成功");
-                }else {
-                    Log.d(TAG , "保存失败");
-                }
-            }
+    @Override
+    public void done(boolean b, JBException e) {
+        if (b){
+            Log.d(TAG , "保存成功");
+        }else {
+            Log.d(TAG , "保存失败");
+        }
+    }
 });
 ```
  如需在保存成功后更新本地对象，可以调用
+ 
  `jbObject.setFetchWhenSave(true);` 
 
 ### 2.5 更新对象
@@ -227,10 +227,10 @@ JBUser jbUser = new JBUser();
 jbUser.setUsername("ZhangSan");               
 jbUser.setPassword("123456");
 try {
-		jbUser.signUp();
-		Log.d(TAG, "注册成功");
+	jbUser.signUp();
+	Log.d(TAG, "注册成功");
 } catch (JBException e) {
-		e.printStackTrace();
+	e.printStackTrace();
 }
 
 2.异步注册
@@ -260,7 +260,6 @@ String password = "123456";
 JBUser.loginInBackground(username, password, new JBLoginCallback() {
     @Override
     public void done(boolean success, JBUser user, JBException e) {
-        
 		if (success) {
 			Log.d(TAG, "登录成功");
 		} else {
@@ -279,9 +278,9 @@ JBUser.loginInBackground(username, password, new JBLoginCallback() {
 //使用currentUser对象进行判断
 JBUser jbUser = JBUser.getCurrentUser();
 if (jbUser!=null){
-		Log.d(TAG, "currentUser不为空，允许用户使用");
+	Log.d(TAG, "currentUser不为空，允许用户使用");
 }else {
-		Log.d(TAG, "currentUser为空，此时可打开用户注册/登陆的界面");
+	Log.d(TAG, "currentUser为空，此时可打开用户注册/登陆的界面");
 }
 
 ```
