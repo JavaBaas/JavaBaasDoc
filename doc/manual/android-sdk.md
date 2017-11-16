@@ -1,7 +1,7 @@
 # 目录
 ## 一、SDK安装与初始化
 
-#### Maven自动导入安装（coming soon）
+#### Maven自动导入安装
 
 ``implementation 'com.javabaas:javasdk:2.0.0'``
 
