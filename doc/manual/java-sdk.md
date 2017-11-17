@@ -372,7 +372,6 @@ auth | 第三方登录信息
 14 | updatePasswordInBackground(String oldPassword, String newPassword, JBUpdatePasswordCallback callback) | [修改登录密码（异步）](java-sdk.md#修改登录密码)
 15 | update() | [更新用户信息（同步)](java-sdk.md#更新用户信息)
 16 | updateInBackground(JBUpdateCallback callback) | [更新用户信息（异步）](java-sdk.md#更新用户信息)
-17 | resetSessionToken(String userId) | [重置用户sessionToken（同步)](java-sdk.md#重置用户sessionToken)
 
 ### 用户名密码注册
 使用者可以使用普通权限使用用户名密码进行注册：
@@ -503,18 +502,6 @@ user.updateInBackground(new JBUpdateCallback() {
 		//code
 	}
 });
-```
-
-### 重置用户sessionToken
-使用者可以使用普通权限，在成功登录后可以重置本人的`sessionToken`，重置完`sessionToken`后，所有设备登录的该用户都会被下线。
-
-```java
-JBUser user = JBUser.getCurrentUser();
-try {
-	JBUser.resetSessionToken(user.getObjectId());
-} catch (JBException e) {
-	e.printStackTrace();
-}
 ```
 
 ## JBQuery 查询

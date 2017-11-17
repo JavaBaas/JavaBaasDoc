@@ -10,7 +10,7 @@ CocoaPods 是一个强大的管理第三方库的工具，能最大化的简化�
 CocoaPods安装完毕以后，在项目的根目录下创建一个名为`Podfile`的文件（无扩展名），并添加以下内容
 
 ```
-pod 'JavaBaasSDK'
+pod 'javabaas'
 ```
 
 然后在终端执行`pod install`来安装。安装完毕以后，运行`pod search JavaBaasSDK`以确认SDK安装到本地库。
