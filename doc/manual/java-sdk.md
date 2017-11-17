@@ -10,7 +10,7 @@
 	<dependency>
 		<groupId>com.javabaas</groupId>
 		<artifactId>javasdk</artifactId>
-		<version>1.0.1</version>
+		<version>2.0.1</version>
 	</dependency>
 </dependencies>
 ```
@@ -19,7 +19,7 @@
 
 ```
 dependencies {
-	compile("com.javabaas:javasdk:1.0.1")
+	compile("com.javabaas:javasdk:2.0.1")
 }
 ```
 
