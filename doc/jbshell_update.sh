@@ -1,13 +1,13 @@
 #!/bin/bash
 echo "开始安装"
 
-JAVABAAS_SERVICE="http://7xr649.dl1.z0.glb.clouddn.com/jbshell_2000.zip"
+JAVABAAS_SERVICE="http://7xr649.dl1.z0.glb.clouddn.com/jbshell_2001.zip"
 
 if [ -z "$JAVABAAS_DIR" ]; then
     JAVABAAS_DIR="$HOME/.javabaas"
 fi
 
-javabaas_bashrc="${HOME}/.bashrc"
+javabaas_bash_profile="${HOME}/.bash_profile"
 javabaas_zhsrc="${HOME}/.zshrc"
 
 javabaas_init_snippet=$( cat << EOF
@@ -70,16 +70,16 @@ rm -f "$jbshell_zip_file"
 echo "解压成功"
 
 echo "添加bash环境变量..."
-if [ ! -f "$javabaas_bashrc" ]; then
-	echo "#!/bin/bash" > "$javabaas_bashrc"
-	echo "$javabaas_init_snippet" >> "$javabaas_bashrc"
-	echo "创建并更新 ${javabaas_bashrc}"
-	#source "$javabaas_bashrc"
+if [ ! -f "$javabaas_bash_profile" ]; then
+	echo "#!/bin/bash" > "$javabaas_bash_profile"
+	echo "$javabaas_init_snippet" >> "$javabaas_bash_profile"
+	echo "创建并更新 ${javabaas_bash_profile}"
+	#source "$javabaas_bash_profile"
 else
-	if [[ -z $(grep 'JBSHELL_DIR' "$javabaas_bashrc") ]]; then
-		echo -e "\n$javabaas_init_snippet" >> "$javabaas_bashrc"
-		echo "更新 ${javabaas_bashrc}"
-		#source "$javabaas_bashrc"
+	if [[ -z $(grep 'JBSHELL_DIR' "$javabaas_bash_profile") ]]; then
+		echo -e "\n$javabaas_init_snippet" >> "$javabaas_bash_profile"
+		echo "更新 ${javabaas_bash_profile}"
+		#source "$javabaas_bash_profile"
 	fi
 fi
 
