@@ -67,7 +67,7 @@ jbshell_dir_del="${JAVABAAS_DIR}/jbshell"
 
 # 判断之前是否有配置文件，如果有拷贝出来
 echo "保留旧的配置文件"
-if [-f "${jbshell_dir_del}/lib/jbshell.properties"]; then
+if [ -f "${jbshell_dir_del}/lib/jbshell.properties" ]; then
     cp -f "${jbshell_dir_del}/lib/jbshell.properties" "${JAVABAAS_DIR}"
 fi
 # 删除之前的文件
@@ -76,7 +76,7 @@ unzip -qo "$jbshell_zip_file" -d "$JAVABAAS_DIR" -x __MACOSX/*
 rm -f "$jbshell_zip_file"
 echo "解压成功"
 
-if [-f "${JAVABAAS_DIR}/jbshell.properties"]; then
+if [ -f "${JAVABAAS_DIR}/jbshell.properties" ]; then
     mv -f "${JAVABAAS_DIR}/jbshell.properties" "${jbshell_dir_del}/lib"
 fi
 
