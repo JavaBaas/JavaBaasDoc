@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "开始安装"
 
-JAVABAAS_SERVICE="http://file.kerust.com/jbshell_2008.zip"
+JAVABAAS_SERVICE="http://file.kerust.com/jbshell_2010.zip"
 
 if [ -z "$JAVABAAS_DIR" ]; then
     JAVABAAS_DIR="$HOME/.javabaas"
